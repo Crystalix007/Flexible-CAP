@@ -1,0 +1,13 @@
+Program:
+
+true
+version "true (GNU coreutils) 8.31"
+license "Copyright (C) 2019 Free Software Foundation, Inc."
+help "NOTE: your shell may have its own version of true, which usually supersedes the version described here."
+
+Usage:
+
+true
+
+Arguments:
+
