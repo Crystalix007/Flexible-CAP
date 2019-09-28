@@ -8,10 +8,9 @@ Usage:
 
 *program name* *(optional argument list)*
 *program name* **alternative form** *(optional argument list)*
-*...*
-
-Arguments:
 
 *some grammar for composite arguments*
+
+Arguments:
 
 *--longform*, *(optional shortform)*, *(optional arguments)*, *description*
