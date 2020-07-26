@@ -93,7 +93,7 @@ void Grammar::Driver::addUsage(Usage usage) { usages.push_back(usage); }
 
 void Grammar::Driver::addRule(std::string ruleName,
                               std::vector<std::string> options) {
-  rules.push_back({ruleName, options});
+  rules.insert({ruleName, options});
 }
 
 mstch::map Grammar::Driver::getContext() const {
@@ -102,6 +102,7 @@ mstch::map Grammar::Driver::getContext() const {
                     {"argument_tokens", generateArgumentTokens()},
                     {"argument_explanations", generateArgumentExplanation()},
                     {"usage", generateUsageList()},
+                    {"positional_arguments", generatePositionalList()},
                     {"usage_rules", generateUsageRuleList()},
                     {"version", version},
                     {"license", license},
@@ -149,15 +150,37 @@ mstch::array Grammar::Driver::generateUsageList() const {
   mstch::array usageList{};
 
   for (const auto &usage : usages) {
-    const mstch::array flags{usage.flags.begin(), usage.flags.end()};
-    const mstch::array positional{usage.positional.begin(),
-                                  usage.positional.end()};
+    mstch::array flags{};
+    mstch::array positional{};
+
+    for (const auto &argument : usage.arguments) {
+      if (rules.find(argument) != rules.end()) {
+        flags.push_back(argument);
+      } else {
+        positional.push_back(argument);
+      }
+    }
 
     usageList.push_back(
         mstch::map{{"flags", flags}, {"positional", positional}});
   }
 
   return usageList;
+}
+
+mstch::array Grammar::Driver::generatePositionalList() const {
+  std::set<std::string> positionalArgumentsSet{};
+
+  for (const auto &usage : usages) {
+    for (const auto &argument : usage.arguments) {
+      if (rules.find(argument) == rules.end()) {
+        positionalArgumentsSet.insert(argument);
+      }
+    }
+  }
+
+  return mstch::array{positionalArgumentsSet.begin(),
+                      positionalArgumentsSet.end()};
 }
 
 mstch::array Grammar::Driver::generateUsageRuleList() const {
@@ -214,8 +237,8 @@ mstch::map Grammar::Driver::alignArg(Argument &arg) const {
   return result;
 }
 
-bool Grammar::Driver::ArgumentComparator::
-operator()(const std::unique_ptr<Argument> &left,
-           const std::unique_ptr<Argument> &right) const {
+bool Grammar::Driver::ArgumentComparator::operator()(
+    const std::unique_ptr<Argument> &left,
+    const std::unique_ptr<Argument> &right) const {
   return *left < *right;
 }

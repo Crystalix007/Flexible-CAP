@@ -48,7 +48,8 @@
 %token                            LICENSE
 %token                            HELP
 %token <std::string>              VALUE
-%token <std::string>              USAGE
+%token <std::string>              ARGUMENT
+%token                            USAGE_END
 %token <std::string>              LONGOPT
 %token <char>                     SHORTOPT
 %token <std::vector<std::string>> PARAMETERS
@@ -61,6 +62,8 @@
 %type <std::optional<char>>                     OPTIONAL_SHORTOPT
 %type <std::optional<std::vector<std::string>>> OPTIONAL_PARAMETERS
 %type <std::vector<std::string>>                RULE_OPTIONS
+%type <std::vector<std::string>>                USAGE
+%type <std::vector<std::string>>                USAGE_ARGUMENTS
 
 %start ARGSPEC
 
@@ -96,14 +99,21 @@ USAGE_DETAILS
 	;
 
 USAGE_DETAIL
-	: USAGE {
-		if ($1.empty())
-			driver.addUsage(Usage{ {}, {} });
-		else
-			driver.addUsage(Usage{ { $1 }, {} });
+	: USAGE_ARGUMENTS USAGE_END {
+		driver.addUsage(Usage{ $1 });
 	}
 	| RULE_NAME RULE_EQUALS RULE_OPTIONS {
 		driver.addRule($1, $3);
+	}
+	;
+
+USAGE_ARGUMENTS
+	: %empty {
+		$$ = {};
+	}
+	| USAGE_ARGUMENTS ARGUMENT {
+		$$ = $1;
+		$$.push_back($2);
 	}
 	;
 

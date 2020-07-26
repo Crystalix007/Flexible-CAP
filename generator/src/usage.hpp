@@ -3,5 +3,5 @@
 #include <vector>
 
 struct Usage {
-  std::vector<std::string> flags, positional;
+  std::vector<std::string> arguments;
 };

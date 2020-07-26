@@ -29,7 +29,7 @@ NAME [^[:space:]]+
 SL_SPACE [[:space:]]{-}[\n]
 LONGOPT [[:alpha:]][[:alnum:]\-]*
 SHORTOPT [^[:space:]]
-PARAM [[:alpha:]][[:alnum:]]*
+PARAM [[:alpha:]][[:alnum:]_]*
 RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 
 %%
@@ -160,23 +160,27 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 
 <USAGE_DETAILS_BEGIN>\n {
 	BEGIN(USAGE_SECTION);
-	yyval->build<std::string>();
 	lloc->lines();
 
-	return token::USAGE;
+	return token::USAGE_END;
 }
 
-<USAGE_DETAILS>[^[:space:]].*$ {
+<USAGE_DETAILS>[^[:space:]]+ {
+	yyval->build<std::string>(yytext);
+
+	return token::ARGUMENT;
+}
+
+<USAGE_DETAILS>{SL_SPACE}+ {
+	/* ignore */
+}
+
+<USAGE_DETAILS>\n {
 	BEGIN(USAGE_SECTION);
-	const std::string_view usage{ yytext };
-	auto trimEndIter = std::find_if_not(usage.rend(),
-		usage.rbegin(),
-		[](char charac){ return std::isspace(charac); });
-	const std::string trimUsage{ usage.begin(), trimEndIter.base() };
 
-	yyval->build<std::string>(trimUsage);
+	lloc->lines();
 
-	return token::USAGE;
+	return token::USAGE_END;
 }
 
 <USAGE_RULE_BEGIN>{RULE_TOKEN} {

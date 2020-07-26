@@ -78,8 +78,12 @@ ARGUMENTS
 		driver.addArg(@@{argspec}@@ArgGrammar::FlagArg::license);
 		driver.setResult(Driver::Result::completedAction);
 	} @@#usage@@
-	|@@#flags@@ ARGUMENT_@@{.}@@@@/flags@@@@#positional@@ @@{.}@@@@/positional@@@@^flags@@@@^positional@@ %empty@@/positional@@@@/flags@@@@/usage@@
-	;@@#usage_rules@@
+	|@@#flags@@ ARGUMENT_@@{.}@@@@/flags@@@@#positional@@ POSITIONAL_@@{.}@@@@/positional@@@@^flags@@@@^positional@@ %empty@@/positional@@@@/flags@@@@/usage@@
+	;@@#positional_arguments@@
+
+POSITIONAL_@@{.}@@
+	: POSITIONAL_ARGUMENT
+	;@@/positional_arguments@@@@#usage_rules@@
 
 ARGUMENT_@@{rule_name}@@
 	:@@#options@@ ARGUMENT_@@{option}@@@@#has_next@@

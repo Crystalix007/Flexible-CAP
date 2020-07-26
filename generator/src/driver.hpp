@@ -5,6 +5,7 @@
 #include "scanner.hpp"
 #include "usage.hpp"
 #include <iostream>
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -47,6 +48,7 @@ private:
   mstch::array generateArgumentExplanation() const;
   mstch::array generateUsageList() const;
   mstch::array generateUsageRuleList() const;
+  mstch::array generatePositionalList() const;
   mstch::node getHelpAddendum() const;
 
   static std::string explainRule(const std::string &ruleName,
@@ -68,7 +70,7 @@ private:
   std::set<std::unique_ptr<Argument>, ArgumentComparator> arguments;
   std::optional<std::string> helpAddendum;
   std::vector<Usage> usages;
-  std::vector<std::pair<std::string, std::vector<std::string>>> rules;
+  std::map<std::string, std::vector<std::string>> rules;
   size_t maxArgLength, maxParamLength;
 };
 } // namespace Grammar
