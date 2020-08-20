@@ -34,5 +34,5 @@ protected:
 };
 
 struct Usage {
-  std::vector<std::shared_ptr<UsageArgument>> arguments;
+	std::vector<std::shared_ptr<UsageArgument>> arguments;
 };

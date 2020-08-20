@@ -3,9 +3,9 @@
 #include "driver.hpp"
 
 namespace Grammar {
-class PrettyPrinter {
+	class PrettyPrinter {
 	public:
 		PrettyPrinter(const Driver& driver);
 		virtual ~PrettyPrinter() = default;
-};
+	};
 } // namespace Grammar

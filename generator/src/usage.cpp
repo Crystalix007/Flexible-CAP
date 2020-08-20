@@ -6,14 +6,13 @@ std::string UsageArgument::cleanToken() const {
 }
 
 NonPositionalUsageArgument::NonPositionalUsageArgument(const std::string& argument)
-	: arg{ argument } {}
+    : arg{ argument } {}
 
 std::string NonPositionalUsageArgument::toStr() const {
 	return this->arg;
 }
 
-PositionalUsageArgument::PositionalUsageArgument(const std::string& argument)
-	: arg{ argument } {}
+PositionalUsageArgument::PositionalUsageArgument(const std::string& argument) : arg{ argument } {}
 
 std::string PositionalUsageArgument::toStr() const {
 	return this->arg;
