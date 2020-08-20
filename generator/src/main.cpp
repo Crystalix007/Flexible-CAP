@@ -5,15 +5,23 @@
 #include "driver.hpp"
 #include "templates.hpp"
 
+#ifdef COMMANDLINE_INTERFACE
+#include "fcapArgGrammarDriver.hpp"
+#endif
+
 std::string symbolNameToOutputFile(const std::string &symbolName);
 
 int main(int argc, char *argv[]) {
+#ifndef COMMANDLINE_INTERFACE
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <filename-to-parse>\n";
     return 1;
   }
+#endif
 
   Grammar::Driver driver{};
+
+#ifndef COMMANDLINE_INTERFACE
   std::ifstream specFile{argv[1]};
 
   if (!specFile) {
@@ -22,6 +30,17 @@ int main(int argc, char *argv[]) {
         << "' for writing.\n Make sure this file exists and is readable.\n";
     return 2;
   }
+#else
+	fcapArgGrammar::Driver driver{ argc, argv };
+	auto res = driver.parse();
+
+	if (res != Result::success) {
+		if (res == Result::completedAction)
+			return 0;
+
+		return -1;
+	}
+#endif
 
   driver.parse(specFile);
   const auto context = driver.getContext();

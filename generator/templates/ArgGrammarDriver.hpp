@@ -10,7 +10,8 @@
 
 namespace @@{argspec}@@ArgGrammar {
 	enum class FlagArg { @@#argument_tokens@@@@^has_parameters@@@@{clean_token}@@, @@/has_parameters@@@@/argument_tokens@@ };@@#any_parameters@@
-	enum class ParamArg { @@#argument_tokens@@@@#has_parameters@@@@{clean_token}@@, @@/has_parameters@@@@/argument_tokens@@ };@@/any_parameters@@
+	enum class ParamArg { @@#argument_tokens@@@@#has_parameters@@@@{clean_token}@@, @@/has_parameters@@@@/argument_tokens@@ };@@/any_parameters@@@@#any_positional_arguments@@
+	enum class PositionalArg { @@#positional_arguments@@@@{clean_token}@@, @@/positional_arguments };@@/any_positional_arguments@@
 
 	class Scanner;
 
@@ -53,6 +54,7 @@ namespace @@{argspec}@@ArgGrammar {
 		 */
 
 		std::set<FlagArg> flagArguments;@@#any_parameters@@
-		std::map<ParamArg, std::vector<std::string>> paramArguments;@@/any_parameters@@
+		std::map<ParamArg, std::vector<std::string>> paramArguments;@@/any_parameters@@@@#any_positional_arguments@@
+		std::map<PositionalArg, std::string> positionalArguments;@@/any_positional_arguments@@
 	};
 } // namespace trueArgGrammar

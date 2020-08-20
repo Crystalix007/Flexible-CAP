@@ -41,6 +41,7 @@ private:
   Grammar::Scanner *scanner = nullptr;
 
   bool usesAnyParameters() const;
+  bool usesAnyPositionalArguments() const;
   mstch::array generateArgumentTokens() const;
   mstch::map generateHelpToken() const;
   mstch::map generateVersionToken() const;

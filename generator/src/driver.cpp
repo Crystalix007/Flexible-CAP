@@ -40,6 +40,7 @@ void Grammar::Driver::parse_helper(std::istream &iss) {
   delete scanner;
   try {
     scanner = new Grammar::Scanner(&iss);
+		// scanner->set_debug(1);
   } catch (const std::bad_alloc &ba) {
     std::cerr << "Failed to allocate scanner: \"" << ba.what()
               << "\". Exiting!\n";
@@ -49,6 +50,7 @@ void Grammar::Driver::parse_helper(std::istream &iss) {
   delete parser;
   try {
     parser = new Grammar::Parser(*scanner, *this);
+		// parser->set_debug_level(1);
   } catch (const std::bad_alloc &ba) {
     std::cerr << "Failed to allocate parser: \"" << ba.what()
               << "\". Exiting!\n";
@@ -127,6 +129,18 @@ bool Grammar::Driver::usesAnyParameters() const {
   return false;
 }
 
+bool Grammar::Driver::usesAnyPositionalArguments() const {
+  for (const auto &usage : usages) {
+    for (const auto &argument : usage.arguments) {
+      if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
+				return true;
+      }
+    }
+  }
+
+	return false;
+}
+
 mstch::array Grammar::Driver::generateArgumentTokens() const {
   mstch::array tokens{};
 
@@ -140,8 +154,9 @@ mstch::array Grammar::Driver::generateArgumentTokens() const {
 mstch::array Grammar::Driver::generateArgumentExplanation() const {
   mstch::array argumentExplanations{};
 
-  for (const auto &rule : rules)
+  for (const auto &rule : rules) {
     argumentExplanations.push_back(explainRule(rule.first, rule.second));
+	}
 
   return argumentExplanations;
 }
@@ -154,10 +169,10 @@ mstch::array Grammar::Driver::generateUsageList() const {
     mstch::array positional{};
 
     for (const auto &argument : usage.arguments) {
-      if (rules.find(argument) != rules.end()) {
-        flags.push_back(argument);
+      if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
+        flags.push_back(argument->toStr());
       } else {
-        positional.push_back(argument);
+        positional.push_back(argument->toStr());
       }
     }
 
@@ -173,8 +188,8 @@ mstch::array Grammar::Driver::generatePositionalList() const {
 
   for (const auto &usage : usages) {
     for (const auto &argument : usage.arguments) {
-      if (rules.find(argument) == rules.end()) {
-        positionalArgumentsSet.insert(argument);
+      if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
+        positionalArgumentsSet.insert(argument->cleanToken());
       }
     }
   }

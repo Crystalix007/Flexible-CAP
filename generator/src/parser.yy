@@ -1,13 +1,15 @@
 /* Parses an argument specification */
 %skeleton "lalr1.cc"
 %require "3.2"
-%debug
 %defines
+%define parse.trace true
 %define api.namespace {Grammar}
 %define api.parser.class {Parser}
 
 %code requires{
+#	include <memory>
 #	include <optional>
+#	include "usage.hpp"
 
 	namespace Grammar {
 		class Driver;
@@ -31,8 +33,6 @@
 #	include <string>
 #	include <vector>
 #	include <utility>
-#	include <memory>
-
 
 #	undef yylex
 #	define yylex scanner.yylex
@@ -43,27 +43,26 @@
 %locations
 %define api.location.file none
 
-%token                            PROGRAM
-%token                            VERSION
-%token                            LICENSE
-%token                            HELP
-%token <std::string>              VALUE
-%token <std::string>              ARGUMENT
-%token                            USAGE_END
-%token <std::string>              LONGOPT
-%token <char>                     SHORTOPT
-%token <std::vector<std::string>> PARAMETERS
-%token <std::string>              DESCRIPTION
-%token <std::string>              RULE_NAME
-%token                            RULE_EQUALS
-%token                            RULE_OR
-%token <std::string>              RULE_TOKEN
+%token                                  PROGRAM
+%token                                  VERSION
+%token                                  LICENSE
+%token                                  HELP
+%token <std::string>                    VALUE
+%token <std::shared_ptr<UsageArgument>> ARGUMENT
+%token                                  USAGE_END
+%token <std::string>                    LONGOPT
+%token <char>                           SHORTOPT
+%token <std::vector<std::string>>       PARAMETERS
+%token <std::string>                    DESCRIPTION
+%token <std::string>                    RULE_NAME
+%token                                  RULE_EQUALS
+%token                                  RULE_OR
+%token <std::string>                    RULE_TOKEN
 
-%type <std::optional<char>>                     OPTIONAL_SHORTOPT
-%type <std::optional<std::vector<std::string>>> OPTIONAL_PARAMETERS
-%type <std::vector<std::string>>                RULE_OPTIONS
-%type <std::vector<std::string>>                USAGE
-%type <std::vector<std::string>>                USAGE_ARGUMENTS
+%type <std::optional<char>>                         OPTIONAL_SHORTOPT
+%type <std::optional<std::vector<std::string>>>     OPTIONAL_PARAMETERS
+%type <std::vector<std::string>>                    RULE_OPTIONS
+%type <std::vector<std::shared_ptr<UsageArgument>>> USAGE_ARGUMENTS
 
 %start ARGSPEC
 
