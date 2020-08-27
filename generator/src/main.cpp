@@ -3,6 +3,7 @@
 #include <mstch/mstch.hpp>
 
 #include "driver.hpp"
+#include "pretty-printer.hpp"
 #include "templates.hpp"
 
 #ifdef COMMANDLINE_INTERFACE
@@ -42,6 +43,11 @@ int main(int argc, char* argv[]) {
 #endif
 
 	driver.parse(specFile);
+
+	/*
+	 * Generate the output files
+	 *
+
 	const auto context = driver.getContext();
 
 	for (const auto& templateFile : templateFiles) {
@@ -52,6 +58,14 @@ int main(int argc, char* argv[]) {
 		outputFile << mstch::render(strTemplate, context);
 		outputFile.close();
 	}
+	*/
+
+	/*
+	 * Pretty print.
+	 *
+	 */
+	Grammar::PrettyPrinter pp{ driver };
+	std::cout << pp.print() << std::endl;
 
 	return 0;
 }

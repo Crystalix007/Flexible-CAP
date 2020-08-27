@@ -8,7 +8,7 @@ AlwaysBreakTemplateDeclarations: Yes
 BreakBeforeBraces: Attach
 BreakConstructorInitializers: BeforeColon
 Cpp11BracedListStyle: false
-ColumnLimit: 100
+ColumnLimit: 80
 DerivePointerAlignment: false
 FixNamespaceComments: true
 IndentCaseLabels: true

@@ -6,10 +6,10 @@
 
 Grammar::Driver::Driver()
     : arguments{ ArgumentComparator{} }, maxArgLength{ 0 }, maxParamLength{ 0 } {
-	addArg(std::make_unique<FlagArgument>("help", std::nullopt, "shows this help message"));
-	addArg(std::make_unique<FlagArgument>("version", std::nullopt,
+	addArg(std::make_shared<FlagArgument>("help", std::nullopt, "shows this help message"));
+	addArg(std::make_shared<FlagArgument>("version", std::nullopt,
 	                                      "shows the version of this software"));
-	addArg(std::make_unique<FlagArgument>("license", std::nullopt,
+	addArg(std::make_shared<FlagArgument>("license", std::nullopt,
 	                                      "shows the license of this software"));
 }
 
@@ -76,7 +76,7 @@ void Grammar::Driver::setHelpAddendum(std::string addendum) {
 	this->helpAddendum = addendum;
 }
 
-void Grammar::Driver::addArg(std::unique_ptr<Argument> argument) {
+void Grammar::Driver::addArg(std::shared_ptr<Argument> argument) {
 	maxArgLength = std::max(maxArgLength, argument->argStrLength());
 	maxParamLength = std::max(maxParamLength, argument->paramStrLength());
 	const auto prevVal = arguments.find(argument);
@@ -243,7 +243,30 @@ mstch::map Grammar::Driver::alignArg(Argument& arg) const {
 	return result;
 }
 
-bool Grammar::Driver::ArgumentComparator::operator()(const std::unique_ptr<Argument>& left,
-                                                     const std::unique_ptr<Argument>& right) const {
-	return *left < *right;
+std::string Grammar::Driver::getProgramName() const {
+	return programName;
+}
+
+std::string Grammar::Driver::getVersion() const {
+	return version;
+}
+
+std::string Grammar::Driver::getLicense() const {
+	return license;
+}
+
+std::string Grammar::Driver::getHelp() const {
+	return helpAddendum.value_or("");
+}
+
+std::vector<Usage> Grammar::Driver::getUsages() const {
+	return usages;
+}
+
+std::map<std::string, std::vector<std::string>> Grammar::Driver::getRules() const {
+	return rules;
+}
+
+std::set<std::shared_ptr<Argument>, ArgumentComparator> Grammar::Driver::getArguments() const {
+	return arguments;
 }

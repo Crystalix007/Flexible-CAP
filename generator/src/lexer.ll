@@ -166,17 +166,13 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 }
 
 <USAGE_DETAILS>--[^[:space:]-][^[:space:]]* {
-	const auto npua = std::make_shared<NonPositionalUsageArgument>(std::string{ yytext });
-	std::cerr << npua->toStr() << std::endl;
-	yyval->build<std::shared_ptr<UsageArgument>>(npua);
+	yyval->build<UsageArgument*>(new NonPositionalUsageArgument{ yytext });
 
 	return token::ARGUMENT;
 }
 
 <USAGE_DETAILS>[^[:space:]-][^[:space:]]+ {
-	const auto pua = std::make_shared<PositionalUsageArgument>(std::string{ yytext });
-	std::cerr << pua->toStr() << std::endl;
-	yyval->build<std::shared_ptr<UsageArgument>>(pua);
+	yyval->build<UsageArgument*>(new PositionalUsageArgument{ yytext });
 
 	return token::ARGUMENT;
 }

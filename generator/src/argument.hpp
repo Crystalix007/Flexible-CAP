@@ -48,3 +48,9 @@ public:
 public:
 	std::vector<std::string> parameters;
 };
+
+struct ArgumentComparator {
+	bool operator()(const std::shared_ptr<Argument>& left,
+	                const std::shared_ptr<Argument>& right) const;
+};
+

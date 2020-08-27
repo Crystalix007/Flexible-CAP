@@ -1,10 +1,10 @@
 LEXER    = flex
 PARSER   = bison
-CXX      = g++
-CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option
+CXX      = clang++
+CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option -O0 -g
 CPPFLAGS =
 LDFLAGS  =
-LIBS     = -lmstch
+LIBS     = -lmstch -O0 -g
 
 SRC_DIR   = src
 GEN_DIR   = generated

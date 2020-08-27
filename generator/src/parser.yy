@@ -43,21 +43,21 @@
 %locations
 %define api.location.file none
 
-%token                                  PROGRAM
-%token                                  VERSION
-%token                                  LICENSE
-%token                                  HELP
-%token <std::string>                    VALUE
-%token <std::shared_ptr<UsageArgument>> ARGUMENT
-%token                                  USAGE_END
-%token <std::string>                    LONGOPT
-%token <char>                           SHORTOPT
-%token <std::vector<std::string>>       PARAMETERS
-%token <std::string>                    DESCRIPTION
-%token <std::string>                    RULE_NAME
-%token                                  RULE_EQUALS
-%token                                  RULE_OR
-%token <std::string>                    RULE_TOKEN
+%token                            PROGRAM
+%token                            VERSION
+%token                            LICENSE
+%token                            HELP
+%token <std::string>              VALUE
+%token <UsageArgument*>           ARGUMENT
+%token                            USAGE_END
+%token <std::string>              LONGOPT
+%token <char>                     SHORTOPT
+%token <std::vector<std::string>> PARAMETERS
+%token <std::string>              DESCRIPTION
+%token <std::string>              RULE_NAME
+%token                            RULE_EQUALS
+%token                            RULE_OR
+%token <std::string>              RULE_TOKEN
 
 %type <std::optional<char>>                         OPTIONAL_SHORTOPT
 %type <std::optional<std::vector<std::string>>>     OPTIONAL_PARAMETERS
@@ -112,7 +112,7 @@ USAGE_ARGUMENTS
 	}
 	| USAGE_ARGUMENTS ARGUMENT {
 		$$ = $1;
-		$$.push_back($2);
+		$$.push_back(std::shared_ptr<UsageArgument>($2));
 	}
 	;
 
@@ -147,9 +147,9 @@ ARGUMENT_DETAILS
 		}
 
 		if ($3) /* if parameters exist */
-			driver.addArg(std::make_unique<ParameterArgument>($1, $2, *$3, $4));
+			driver.addArg(std::make_shared<ParameterArgument>($1, $2, *$3, $4));
 		else
-			driver.addArg(std::make_unique<FlagArgument>($1, $2, $4));
+			driver.addArg(std::make_shared<FlagArgument>($1, $2, $4));
 	  }
 	;
 

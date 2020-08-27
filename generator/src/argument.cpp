@@ -103,3 +103,9 @@ size_t ParameterArgument::paramStrLength() const {
 
 	return totalSize + (parameters.size() - 1);
 }
+
+bool ArgumentComparator::operator()(
+    const std::shared_ptr<Argument>& left,
+    const std::shared_ptr<Argument>& right) const {
+	return *left < *right;
+}

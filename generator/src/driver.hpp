@@ -11,6 +11,8 @@
 #include <string>
 
 namespace Grammar {
+	class PrettyPrinter;
+
 	class Driver {
 	public:
 		Driver();
@@ -29,10 +31,21 @@ namespace Grammar {
 		void setHelpAddendum(std::string addendum);
 		void addUsage(Usage usage);
 		void addRule(std::string ruleName, std::vector<std::string> options);
-		void addArg(std::unique_ptr<Argument> argument);
+		void addArg(std::shared_ptr<Argument> argument);
 
 		mstch::map getContext() const;
 		std::string getSafeName() const;
+
+	protected:
+		std::string getProgramName() const;
+		std::string getVersion() const;
+		std::string getLicense() const;
+		std::string getHelp() const;
+
+		std::vector<Usage> getUsages() const;
+		std::map<std::string, std::vector<std::string>> getRules() const;
+		std::set<std::shared_ptr<Argument>, ArgumentComparator>
+		getArguments() const;
 
 	private:
 		void parse_helper(std::istream& iss);
@@ -57,21 +70,18 @@ namespace Grammar {
 		static std::string spaceN(size_t spaceCount);
 		mstch::map alignArg(Argument& arg) const;
 
-		struct ArgumentComparator {
-			bool operator()(const std::unique_ptr<Argument>& left,
-			                const std::unique_ptr<Argument>& right) const;
-		};
-
 		/*
 		 * specialised data store
 		 */
 
-		friend Argument;
 		std::string programName, version, license;
-		std::set<std::unique_ptr<Argument>, ArgumentComparator> arguments;
+		std::set<std::shared_ptr<Argument>, ArgumentComparator> arguments;
 		std::optional<std::string> helpAddendum;
 		std::vector<Usage> usages;
 		std::map<std::string, std::vector<std::string>> rules;
 		size_t maxArgLength, maxParamLength;
+
+		friend class Argument;
+		friend class PrettyPrinter;
 	};
 } // namespace Grammar
