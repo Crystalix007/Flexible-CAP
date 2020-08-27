@@ -4,6 +4,7 @@
 #include "parser.tab.hh"
 #include "scanner.hpp"
 #include "usage.hpp"
+#include "rule.hpp"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -30,7 +31,7 @@ namespace Grammar {
 		void setLicense(std::string license);
 		void setHelpAddendum(std::string addendum);
 		void addUsage(Usage usage);
-		void addRule(std::string ruleName, std::vector<std::string> options);
+		void addRule(std::string ruleName, std::vector<std::shared_ptr<RuleAlternation>> options);
 		void addArg(std::shared_ptr<Argument> argument);
 
 		mstch::map getContext() const;
@@ -43,7 +44,7 @@ namespace Grammar {
 		std::string getHelp() const;
 
 		std::vector<Usage> getUsages() const;
-		std::map<std::string, std::vector<std::string>> getRules() const;
+		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> getRules() const;
 		std::set<std::shared_ptr<Argument>, ArgumentComparator>
 		getArguments() const;
 
@@ -66,7 +67,7 @@ namespace Grammar {
 		mstch::node getHelpAddendum() const;
 
 		static std::string explainRule(const std::string& ruleName,
-		                               const std::vector<std::string>& ruleOptions);
+		                               const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions);
 		static std::string spaceN(size_t spaceCount);
 		mstch::map alignArg(Argument& arg) const;
 
@@ -78,7 +79,7 @@ namespace Grammar {
 		std::set<std::shared_ptr<Argument>, ArgumentComparator> arguments;
 		std::optional<std::string> helpAddendum;
 		std::vector<Usage> usages;
-		std::map<std::string, std::vector<std::string>> rules;
+		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> rules;
 		size_t maxArgLength, maxParamLength;
 
 		friend class Argument;

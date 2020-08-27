@@ -92,7 +92,7 @@ void Grammar::Driver::addUsage(Usage usage) {
 	usages.push_back(usage);
 }
 
-void Grammar::Driver::addRule(std::string ruleName, std::vector<std::string> options) {
+void Grammar::Driver::addRule(std::string ruleName, std::vector<std::shared_ptr<RuleAlternation>> options) {
 	rules.insert({ ruleName, options });
 }
 
@@ -203,7 +203,7 @@ mstch::array Grammar::Driver::generateUsageRuleList() const {
 		mstch::array ruleOptions{};
 
 		for (size_t i = 0; i < rulePair.second.size(); i++) {
-			mstch::map ruleOption{ { "option", Argument::cleanToken(rulePair.second[i]) } };
+			mstch::map ruleOption{ { "option", Argument::cleanToken(rulePair.second[i]->toStr()) } };
 
 			if (i + 1 < rulePair.second.size())
 				ruleOption.insert({ "has_next", true });
@@ -223,11 +223,11 @@ mstch::node Grammar::Driver::getHelpAddendum() const {
 }
 
 std::string Grammar::Driver::explainRule(const std::string& ruleName,
-                                         const std::vector<std::string>& ruleOptions) {
+                                         const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions) {
 	return ruleName + " can be " +
-	       std::accumulate(std::next(ruleOptions.begin()), ruleOptions.end(), "--" + ruleOptions[0],
-	                       [](const std::string& left, const std::string& right) {
-		                       return left + " or --" + right;
+	       std::accumulate(std::next(ruleOptions.begin()), ruleOptions.end(), ruleOptions[0]->toStr(),
+	                       [](const std::string& left, const std::shared_ptr<RuleAlternation>& right) {
+		                       return left + " or " + right->toStr();
 	                       });
 }
 
@@ -263,7 +263,7 @@ std::vector<Usage> Grammar::Driver::getUsages() const {
 	return usages;
 }
 
-std::map<std::string, std::vector<std::string>> Grammar::Driver::getRules() const {
+std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> Grammar::Driver::getRules() const {
 	return rules;
 }
 

@@ -1,4 +1,5 @@
 #include "pretty-printer.hpp"
+#include <iterator>
 #include <numeric>
 
 namespace Grammar {
@@ -43,7 +44,9 @@ namespace Grammar {
 					res += "--" + npu->toStr();
 				} else if (const auto pu =
 					    std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
-					res += "<" + pu->toStr() + ">";
+					res += pu->toStr();
+				} else if (const auto du = std::dynamic_pointer_cast<DerivedUsageArgument>(argument)) {
+					res += du->toStr();
 				} else {
 					/* Undefined Argument Handling: ignore. */
 				}
@@ -59,13 +62,19 @@ namespace Grammar {
 		std::string res{};
 
 		for (const auto& [rule, definition] : rules) {
-			res += rule + " = " +
-			       std::accumulate(std::begin(definition), std::end(definition),
-			                       std::string{},
-			                       [](const std::string& s1, const std::string& s2) {
-				                       return s1.empty() ? s2 : s1 + " | " + s2;
-			                       }) +
-			       "\n";
+			res += rule + " = ";
+
+			std::vector<std::string> ruleStrings{};
+			std::transform(std::begin(definition), std::end(definition), std::back_inserter(ruleStrings), [](const auto& alt){
+					return alt->toStr();
+			});
+
+			res += std::accumulate(
+			    std::begin(ruleStrings), std::end(ruleStrings), std::string{},
+			    [](const std::string& s1, const std::string& s2) {
+			      return s1.empty() ? s2 : s1 + " | " + s2;
+			    }) +
+			"\n";
 		}
 
 		return res;

@@ -33,6 +33,17 @@ protected:
 	std::string arg;
 };
 
+class DerivedUsageArgument : public UsageArgument {
+public:
+	DerivedUsageArgument(const std::string& rule);
+	virtual ~DerivedUsageArgument() = default;
+
+	virtual std::string toStr() const override;
+
+protected:
+	std::string rule;
+};
+
 struct Usage {
 	std::vector<std::shared_ptr<UsageArgument>> arguments;
 };

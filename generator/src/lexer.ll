@@ -25,12 +25,13 @@ using token = Grammar::Parser::token;
 
 %x PROGRAM_SECTION PROGRAM_NAME PROGRAM_VALUE PROGRAM_QUOTED_VALUE PROGRAM_QUOTED_VALUE_END USAGE_SECTION USAGE_DETAILS_BEGIN USAGE_DETAILS USAGE_RULE_BEGIN USAGE_RULE ARGUMENTS_SECTION ARGUMENTS_LONGOPT ARGUMENTS_SHORTOPT ARGUMENTS_PARAMETERS ARGUMENTS_DESCRIPTION_BEGIN ARGUMENTS_DESCRIPTION ARGUMENTS_DESCRIPTION_END
 
-NAME [^[:space:]]+
+NAME [a-z0-9\-_]+
 SL_SPACE [[:space:]]{-}[\n]
-LONGOPT [[:alpha:]][[:alnum:]\-]*
-SHORTOPT [^[:space:]]
-PARAM [[:alpha:]][[:alnum:]_]*
-RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
+LONGOPT [a-z][a-z0-9\-]*
+SHORTOPT [a-zA-Z0-9]
+PARAM [A-Z][A-Z0-9_]*
+UPPERCASE [A-Z_]
+LOWERCASE [a-z_]
 
 %%
 
@@ -153,6 +154,15 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 	}
 }
 
+<USAGE_SECTION>{UPPERCASE}+ {
+	if (yytext != programName) {
+		BEGIN(USAGE_RULE_BEGIN);
+		yyless(0);
+	} else {
+		BEGIN(USAGE_DETAILS_BEGIN);
+	}
+}
+
 <USAGE_DETAILS_BEGIN>{SL_SPACE}+ {
 	/* ignore */
 	BEGIN(USAGE_DETAILS);
@@ -165,13 +175,19 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 	return token::USAGE_END;
 }
 
-<USAGE_DETAILS>--[^[:space:]-][^[:space:]]* {
+<USAGE_DETAILS>--{LOWERCASE}+ {
 	yyval->build<UsageArgument*>(new NonPositionalUsageArgument{ yytext });
 
 	return token::ARGUMENT;
 }
 
-<USAGE_DETAILS>[^[:space:]-][^[:space:]]+ {
+<USAGE_DETAILS>{UPPERCASE}+ {
+	yyval->build<UsageArgument*>(new DerivedUsageArgument{ yytext });
+
+	return token::ARGUMENT;
+}
+
+<USAGE_DETAILS>{LOWERCASE}+ {
 	yyval->build<UsageArgument*>(new PositionalUsageArgument{ yytext });
 
 	return token::ARGUMENT;
@@ -189,14 +205,10 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 	return token::USAGE_END;
 }
 
-<USAGE_RULE_BEGIN>{RULE_TOKEN} {
+<USAGE_RULE_BEGIN>{UPPERCASE}+ {
 	BEGIN(USAGE_RULE);
 	yyval->build<std::string>(yytext);
 	return token::RULE_NAME;
-}
-
-<USAGE_RULE_BEGIN>{NAME} {
-	throw std::runtime_error{ "Invalid rule name: " + std::string{ yytext } };
 }
 
 <USAGE_RULE>{SL_SPACE} {
@@ -212,7 +224,12 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 	return token::RULE_TOKEN;
 }
 
-<USAGE_RULE>{RULE_TOKEN} {
+<USAGE_RULE>{UPPERCASE}+ {
+	yyval->build<std::string>(yytext);
+	return token::DERIVED_RULE_TOKEN;
+}
+
+<USAGE_RULE>{LOWERCASE}+ {
 	yyval->build<std::string>(yytext);
 	return token::RULE_TOKEN;
 }
@@ -299,7 +316,7 @@ RULE_TOKEN [[:alpha:]][[:alpha:]_-]*
 
 <*>. {
 	std::cerr << "Scanning error in state: " << YY_START << std::endl;
-	throw std::runtime_error{ "Invalid input: \'" + std::string{ yytext } + "\' on line " + std::to_string(lloc->begin.line) };
+	throw std::runtime_error{ "Invalid input: \'" + std::string{ yytext } + "\' on line " + std::to_string(lloc->begin.line) + ", character " + std::to_string(lloc->begin.column) };
 }
 
 %%

@@ -10,6 +10,7 @@
 #	include <memory>
 #	include <optional>
 #	include "usage.hpp"
+#	include "rule.hpp"
 
 	namespace Grammar {
 		class Driver;
@@ -58,11 +59,13 @@
 %token                            RULE_EQUALS
 %token                            RULE_OR
 %token <std::string>              RULE_TOKEN
+%token <std::string>              DERIVED_RULE_TOKEN
 
-%type <std::optional<char>>                         OPTIONAL_SHORTOPT
-%type <std::optional<std::vector<std::string>>>     OPTIONAL_PARAMETERS
-%type <std::vector<std::string>>                    RULE_OPTIONS
-%type <std::vector<std::shared_ptr<UsageArgument>>> USAGE_ARGUMENTS
+%type <std::optional<char>>                           OPTIONAL_SHORTOPT
+%type <std::optional<std::vector<std::string>>>       OPTIONAL_PARAMETERS
+%type <std::shared_ptr<RuleAlternation>>              RULE_ALTERNATION
+%type <std::vector<std::shared_ptr<RuleAlternation>>> RULE_OPTIONS
+%type <std::vector<std::shared_ptr<UsageArgument>>>   USAGE_ARGUMENTS
 
 %start ARGSPEC
 
@@ -116,11 +119,20 @@ USAGE_ARGUMENTS
 	}
 	;
 
-RULE_OPTIONS
+RULE_ALTERNATION
 	: RULE_TOKEN {
+		$$ = std::make_shared<ArgumentRuleAlternation>($1);
+	}
+	| DERIVED_RULE_TOKEN {
+		$$ = std::make_shared<DerivedRuleAlternation>($1);
+	}
+	;
+
+RULE_OPTIONS
+	: RULE_ALTERNATION {
 		$$ = std::vector{ $1 };
 	}
-	| RULE_OPTIONS RULE_OR RULE_TOKEN {
+	| RULE_OPTIONS RULE_OR RULE_ALTERNATION {
 		$$ = $1;
 		$$.push_back($3);
 	}

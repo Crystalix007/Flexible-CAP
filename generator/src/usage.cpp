@@ -17,3 +17,9 @@ PositionalUsageArgument::PositionalUsageArgument(const std::string& argument) : 
 std::string PositionalUsageArgument::toStr() const {
 	return this->arg;
 }
+
+DerivedUsageArgument::DerivedUsageArgument(const std::string& rule) : rule{ rule } {}
+
+std::string DerivedUsageArgument::toStr() const {
+	return this->rule;
+}

@@ -21,7 +21,7 @@ namespace Grammar {
 		const std::string help;
 
 		std::vector<Usage> usages;
-		std::map<std::string, std::vector<std::string>> rules;
+		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> rules;
 		std::set<std::shared_ptr<Argument>, ArgumentComparator> arguments;
 	};
 } // namespace Grammarrules
