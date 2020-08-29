@@ -84,20 +84,21 @@ namespace Grammar {
 		std::string res{};
 
 		for (const auto& argument : arguments) {
-			res += "--" + argument->argument + ", ";
+			res += "--" + argument->argument;
 
 			if (argument->shortArgument.has_value()) {
-				res += std::string{ "-" } + argument->shortArgument.value();
+				res += std::string{ ", -" } + argument->shortArgument.value();
 			}
 
-			res += ", ";
-
-			if (const auto* paramArg = dynamic_cast<ParameterArgument*>(argument.get())) {
+			if (const auto* paramArg =
+			        dynamic_cast<ParameterArgument*>(argument.get())) {
+				res += ", ";
 				const auto& params = paramArg->parameters;
-				res += std::accumulate(std::begin(params), std::end(params), std::string{},
-						[](const std::string& s1, const std::string &s2) {
-							return s1.empty() ? s2 : s1 + " " + s2;
-						});
+				res +=
+				    std::accumulate(std::begin(params), std::end(params), std::string{},
+				                    [](const std::string& s1, const std::string& s2) {
+					                    return s1.empty() ? s2 : s1 + " " + s2;
+				                    });
 			}
 
 			res += ", \"" + argument->usage + "\"\n";

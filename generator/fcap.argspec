@@ -13,7 +13,7 @@ OPTIONS = --generated-folder | --base-name
 
 Arguments:
 
---help, -h, , "shows this help message"
---version, -V, , "prints the version of the program"
+--help, -h, "shows this help message"
+--version, -V, "prints the version of the program"
 --generated-folder, -f, FOLDER, "folder to output generated content to"
 --base-name, -b, BASE_NAME, "the base filename to output"

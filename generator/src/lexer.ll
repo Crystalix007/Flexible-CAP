@@ -252,36 +252,30 @@ LOWERCASE [a-z_]
 	lloc->lines();
 }
 
-<ARGUMENTS_SECTION>--{LONGOPT} {
-	yyval->build<std::string>(yytext + 2);
+<ARGUMENTS_SECTION>--{LONGOPT}, {
+	BEGIN(ARGUMENTS_LONGOPT);
+	arguments = {};
+	yyval->build<std::string>(std::string{ yytext + 2, yytext + yyleng - 1 });
 	return token::LONGOPT;
 }
 
-<ARGUMENTS_SECTION>, {
-	BEGIN(ARGUMENTS_LONGOPT);
-}
-
-<ARGUMENTS_LONGOPT>-{SHORTOPT} {
-	yyval->build<char>(*(yytext + 1));
-	arguments = {};
-	return token::SHORTOPT;
-}
-
-<ARGUMENTS_LONGOPT>, {
+<ARGUMENTS_LONGOPT>-{SHORTOPT}, {
 	BEGIN(ARGUMENTS_SHORTOPT);
+	yyval->build<char>(*(yytext + 1));
+	return token::SHORTOPT;
 }
 
 <ARGUMENTS_LONGOPT,ARGUMENTS_SHORTOPT,ARGUMENTS_PARAMETERS,ARGUMENTS_DESCRIPTION_BEGIN>{SL_SPACE}+ {
 	/* ignored */
 }
 
-<ARGUMENTS_SHORTOPT,ARGUMENTS_PARAMETERS>{PARAM} {
+<ARGUMENTS_LONGOPT,ARGUMENTS_SHORTOPT,ARGUMENTS_PARAMETERS>{PARAM} {
 	BEGIN(ARGUMENTS_PARAMETERS);
-	arguments.push_back({ yytext });
+	arguments.push_back(std::string{ yytext });
 }
 
 <ARGUMENTS_SHORTOPT,ARGUMENTS_PARAMETERS>, {
-	BEGIN(ARGUMENTS_DESCRIPTION_BEGIN);
+	BEGIN(ARGUMENTS_PARAMETERS);
 	if (!arguments.empty()) {
 		yyval->build<std::vector<std::string>>(arguments);
 		arguments = {};
@@ -289,7 +283,7 @@ LOWERCASE [a-z_]
 	}
 }
 
-<ARGUMENTS_DESCRIPTION_BEGIN>\" {
+<ARGUMENTS_LONGOPT,ARGUMENTS_SHORTOPT,ARGUMENTS_PARAMETERS>\" {
 	BEGIN(ARGUMENTS_DESCRIPTION);
 	quotedVal = "";
 }
