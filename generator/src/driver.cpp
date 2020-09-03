@@ -163,35 +163,48 @@ mstch::array Grammar::Driver::generateUsageList() const {
 	mstch::array usageList{};
 
 	for (const auto& usage : usages) {
-		mstch::array flags{};
-		mstch::array positional{};
+		mstch::array arguments{};
 
 		for (const auto& argument : usage.arguments) {
 			if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
-				flags.push_back(argument->toStr());
+				arguments.push_back(mstch::map{
+						{ "clean_token", argument->toStr()},
+						{ "positional", true },
+				});
 			} else {
-				positional.push_back(argument->toStr());
+				arguments.push_back(mstch::map{
+						{ "clean_token", argument->toStr() },
+						{ "positional", false },
+				});
 			}
 		}
 
-		usageList.push_back(mstch::map{ { "flags", flags }, { "positional", positional } });
+		usageList.push_back(mstch::map{ { "arguments", arguments } });
 	}
 
 	return usageList;
 }
 
 mstch::array Grammar::Driver::generatePositionalList() const {
-	std::set<std::string> positionalArgumentsSet{};
+	std::set<std::shared_ptr<PositionalUsageArgument>, UsageComparator> positionalArgumentsSet{};
 
 	for (const auto& usage : usages) {
 		for (const auto& argument : usage.arguments) {
-			if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
-				positionalArgumentsSet.insert(argument->cleanToken());
+			if (const auto posArg = std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
+				positionalArgumentsSet.insert(posArg);
 			}
 		}
 	}
 
-	return mstch::array{ positionalArgumentsSet.begin(), positionalArgumentsSet.end() };
+	mstch::array positionalArgumentsArray{};
+
+	for (const auto& posArg : positionalArgumentsSet) {
+		positionalArgumentsArray.push_back(mstch::map{
+				{ "clean_token", posArg->cleanToken() }
+		});
+	}
+
+	return positionalArgumentsArray;
 }
 
 mstch::array Grammar::Driver::generateUsageRuleList() const {
@@ -203,7 +216,7 @@ mstch::array Grammar::Driver::generateUsageRuleList() const {
 		mstch::array ruleOptions{};
 
 		for (size_t i = 0; i < rulePair.second.size(); i++) {
-			mstch::map ruleOption{ { "option", Argument::cleanToken(rulePair.second[i]->toStr()) } };
+			mstch::map ruleOption{ { "option", rulePair.second[i]->cleanToken() } };
 
 			if (i + 1 < rulePair.second.size())
 				ruleOption.insert({ "has_next", true });

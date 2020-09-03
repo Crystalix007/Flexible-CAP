@@ -15,7 +15,7 @@ using token = @@{argspec}@@ArgGrammar::Parser::token;
 %option yyclass="@@{argspec}@@ArgGrammar::Scanner"
 %option noyywrap
 %option c++
-%option outfile="@@{argspec}@@ArgGrammarScannerDef.cpp"
+%option outfile="@@{argspec}@@ArgGrammarScanner.ll.cc"
 
 %x SHORT_ARGUMENTS ARGUMENT_VALUE POSITIONAL_ARGUMENTS@@#argument_tokens@@@@#parameters@@ @@{clean_token}@@_PARAMETER_@@{index}@@@@/parameters@@@@/argument_tokens@@
 

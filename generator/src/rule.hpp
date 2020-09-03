@@ -8,6 +8,7 @@ public:
 	virtual ~RuleAlternation() = default;
 
 	virtual std::string toStr() const = 0;
+	virtual std::string cleanToken() const;
 };
 
 class DerivedRuleAlternation : public RuleAlternation {
@@ -27,6 +28,7 @@ public:
 	virtual ~ArgumentRuleAlternation() = default;
 
 	virtual std::string toStr() const override;
+	virtual std::string cleanToken() const override;
 
 protected:
 	std::string argument;

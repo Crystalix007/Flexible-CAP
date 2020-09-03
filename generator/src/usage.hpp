@@ -9,6 +9,10 @@ public:
 
 	virtual std::string toStr() const = 0;
 	virtual std::string cleanToken() const;
+
+	virtual bool operator<(const UsageArgument& other) const;
+	virtual bool operator==(const UsageArgument& other) const;
+	virtual bool operator>(const UsageArgument& other) const;
 };
 
 class NonPositionalUsageArgument : public UsageArgument {
@@ -46,4 +50,9 @@ protected:
 
 struct Usage {
 	std::vector<std::shared_ptr<UsageArgument>> arguments;
+};
+
+struct UsageComparator {
+	bool operator()(const std::shared_ptr<UsageArgument>& left,
+	                const std::shared_ptr<UsageArgument>& right) const;
 };

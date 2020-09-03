@@ -11,7 +11,7 @@
 namespace @@{argspec}@@ArgGrammar {
 	enum class FlagArg { @@#argument_tokens@@@@^has_parameters@@@@{clean_token}@@, @@/has_parameters@@@@/argument_tokens@@ };@@#any_parameters@@
 	enum class ParamArg { @@#argument_tokens@@@@#has_parameters@@@@{clean_token}@@, @@/has_parameters@@@@/argument_tokens@@ };@@/any_parameters@@@@#any_positional_arguments@@
-	enum class PositionalArg { @@#positional_arguments@@@@{clean_token}@@, @@/positional_arguments };@@/any_positional_arguments@@
+	enum class PositionalArg { @@#positional_arguments@@@@{clean_token}@@, @@/positional_arguments@@ };@@/any_positional_arguments@@
 
 	class Scanner;
 

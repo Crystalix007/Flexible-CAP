@@ -3,6 +3,7 @@
 %require "3.2"
 %defines
 %define parse.trace true
+%define api.prefix {__pp}
 %define api.namespace {Grammar}
 %define api.parser.class {Parser}
 
@@ -17,11 +18,11 @@
 		class Scanner;
 	}
 
-#	ifndef YY_NULLPTR
+#	ifndef __PP_NULLPTR
 #		if defined __cplusplus && 201103L <= __cplusplus
-#			define YY_NULLPTR nullptr
+#			define __PP_NULLPTR nullptr
 #		else
-#			define YY_NULLPTR 0
+#			define __PP_NULLPTR 0
 #		endif
 #	endif
 }
@@ -35,8 +36,8 @@
 #	include <vector>
 #	include <utility>
 
-#	undef yylex
-#	define yylex scanner.yylex
+#	undef __pplex
+#	define __pplex scanner.__pplex
 }
 
 %define api.value.type variant

@@ -7,6 +7,7 @@
 #include "templates.hpp"
 
 #ifdef COMMANDLINE_INTERFACE
+# include "debugJSON.hpp"
 #	include "fcapArgGrammarDriver.hpp"
 #endif
 
@@ -47,8 +48,15 @@ int main(int argc, char* argv[]) {
 	/*
 	 * Generate the output files
 	 *
+	 */
 
 	const auto context = driver.getContext();
+
+#ifdef COMMANDLINE_INTERFACE
+	if (driver.getArg(fcapArgGrammar::Driver::FlagArg::debug)) {
+		std::clog << DebugPrinter::printJSON(context) << std::endl;
+	}
+#endif
 
 	for (const auto& templateFile : templateFiles) {
 		std::string strTemplate{ templateFile.contents };
@@ -58,14 +66,15 @@ int main(int argc, char* argv[]) {
 		outputFile << mstch::render(strTemplate, context);
 		outputFile.close();
 	}
-	*/
 
 	/*
 	 * Pretty print.
 	 *
-	 */
+
 	Grammar::PrettyPrinter pp{ driver };
 	std::cout << pp.print() << std::endl;
+
+	*/
 
 	return 0;
 }

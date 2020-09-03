@@ -5,6 +5,7 @@
 %defines
 %define api.namespace {@@{argspec}@@ArgGrammar}
 %define api.parser.class {Parser}
+%define api.prefix {__yy}
 %file-prefix "@@{argspec}@@ArgGrammarParser"
 
 %code requires{
@@ -13,11 +14,11 @@
 		class Scanner;
 	}
 
-#ifndef YY_NULLPTR
+#ifndef __YY_NULLPTR
 #	if defined __cplusplus && 201103L <= __cplusplus
-#		define YY_NULLPTR nullptr
+#		define __YY_NULLPTR nullptr
 #	else
-#		define YY_NULLPTR 0
+#		define __YY_NULLPTR 0
 #	endif
 #endif
 }
@@ -33,8 +34,8 @@
 #include "@@{argspec}@@ArgGrammarDriver.hpp"
 #include "@@{argspec}@@ArgGrammarScanner.hpp"
 
-#undef yylex
-#define yylex scanner.yylex
+#undef __yylex
+#define __yylex scanner.__yylex
 }
 
 %define api.value.type variant
@@ -77,8 +78,8 @@ ARGUMENTS
 		std::cout << "@@{license}@@" << std::endl;
 		driver.addArg(@@{argspec}@@ArgGrammar::FlagArg::license);
 		driver.setResult(Driver::Result::completedAction);
-	} @@#usage@@
-	|@@#flags@@ ARGUMENT_@@{clean_token}@@@@/flags@@@@#positional@@ POSITIONAL_@@{.}@@@@/positional@@@@^flags@@@@^positional@@ %empty@@/positional@@@@/flags@@@@/usage@@
+	}@@#usage@@
+	|@@#arguments@@ @@#positional@@POSITIONAL@@/positional@@@@^positional@@ARGUMENT@@/positional@@_@@{clean_token}@@@@/arguments@@@@/usage@@
 	;@@#positional_arguments@@
 
 POSITIONAL_@@{clean_token}@@

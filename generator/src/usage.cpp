@@ -5,6 +5,18 @@ std::string UsageArgument::cleanToken() const {
 	return Argument::cleanToken(this->toStr());
 }
 
+bool UsageArgument::operator<(const UsageArgument& other) const {
+	return this->cleanToken() < other.cleanToken();
+}
+
+bool UsageArgument::operator==(const UsageArgument& other) const {
+	return this->cleanToken() == other.cleanToken();
+}
+
+bool UsageArgument::operator>(const UsageArgument& other) const {
+	return this->cleanToken() > other.cleanToken();
+}
+
 NonPositionalUsageArgument::NonPositionalUsageArgument(const std::string& argument)
     : arg{ argument } {}
 
@@ -22,4 +34,9 @@ DerivedUsageArgument::DerivedUsageArgument(const std::string& rule) : rule{ rule
 
 std::string DerivedUsageArgument::toStr() const {
 	return this->rule;
+}
+
+bool UsageComparator::operator()(const std::shared_ptr<UsageArgument>& left,
+	                const std::shared_ptr<UsageArgument>& right) const {
+	return left->cleanToken() < right->cleanToken();
 }

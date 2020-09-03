@@ -1,15 +1,17 @@
 #pragma once
 
 #if !defined(yyFlexLexerOnce)
+# define yyFlexLexer __yyFlexLexer
 #	include <FlexLexer.h>
+# undef yyFlexLexer
 #endif
 
 #include "parser.tab.hh"
 
 namespace Grammar {
-	class Scanner : public yyFlexLexer {
+	class Scanner : public __yyFlexLexer {
 	public:
-		Scanner(std::istream* in) : yyFlexLexer{ in } {};
+		Scanner(std::istream* in) : __yyFlexLexer{ in } {};
 
 		virtual ~Scanner(){};
 

@@ -32,8 +32,6 @@ public:
 	mstch::map render() const override;
 	bool hasParameters() const override;
 	size_t paramStrLength() const override;
-
-	bool operator<(const FlagArgument& other) const;
 };
 
 class ParameterArgument : public Argument {

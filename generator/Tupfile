@@ -1,20 +1,54 @@
 LEXER    = flex
 PARSER   = bison
 CXX      = clang++
+
+PROG      = fcap
+BASE_DIR  = ./bootstrap
+SRC_DIR   = src
+TEMPL_DIR = templates
+BUILD_DIR = $(BASE_DIR)/build
+GEN_DIR   = $(BASE_DIR)/generated
+
+&ARGSPEC   = $(PROG).argspec
+
+BOOTSTRAP_TUP = bootstrap/tup_rule.sh
+
 CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option -O0 -g
 CPPFLAGS =
 LDFLAGS  =
 LIBS     = -lmstch -O0 -g
+INCLUDES  = -I "$(SRC_DIR)" -I "$(GEN_DIR)"
 
-SRC_DIR   = src
-GEN_DIR   = generated
-TEMPL_DIR = templates
+!PARSE = |> $(PARSER) -b "$(GEN_DIR)/%B" "%f"                                                  |>
+!LEX   = |> $(LEXER) -o "%o" "%f"                                                              |>
+!TMPL  = |> ld --relocatable --format=binary --output="%o" "%f"                                |>
+!TOBJ  = |> objcopy --rename-section .data=.rodata,alloc,load,readonly,data,contents "%f" "%o" |>
+!CXX   = |> $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -c "%f" -o "%o"                         |>
+!LINK  = |> $(CXX) %f $(LDFLAGS) $(LIBS) -o "%o"                                               |>
+
+# Perform Bootstrapping
+
+: foreach $(SRC_DIR)/*.yy                                                         |> !PARSE |> $(GEN_DIR)/%B.tab.cc | $(GEN_DIR)/%B.tab.hh <BOOTSTRAP_PARSER>
+: foreach $(SRC_DIR)/*.ll | <PARSER>                                              |> !LEX   |> $(GEN_DIR)/%B.ll.cc <BOOTSTRAP_LEXER>
+: foreach $(TEMPL_DIR)/*.*                                                        |> !TMPL  |> $(GEN_DIR)/template-%b.data {BOOTSTRAP_TEMPL}
+: foreach {BOOTSTRAP_TEMPL}                                                       |> !TOBJ  |> $(BUILD_DIR)/%B.o {BOOTSTRAP_OBJS}
+: foreach $(GEN_DIR)/*.cc $(SRC_DIR)/*.cpp | <BOOTSTRAP_PARSER> <BOOTSTRAP_LEXER> |> !CXX   |> $(BUILD_DIR)/%B.o {BOOTSTRAP_OBJS}
+: {BOOTSTRAP_OBJS}                                                                |> !LINK  |> $(BASE_DIR)/$(PROG)
+
+preload $(TEMPL_DIR)
+run $(BOOTSTRAP_TUP) $(BASE_DIR) $(PROG) $(TEMPL_DIR)
+
 BUILD_DIR = build
-PROG      = fcap
+GEN_DIR   = generated
+INCLUDES  = -I "$(SRC_DIR)" -I "$(GEN_DIR)" -I "$(BASE_DIR)"
 
-: foreach $(SRC_DIR)/*.yy                                    |> $(PARSER) -b "$(GEN_DIR)/%B" "%f"                                                  |> "$(GEN_DIR)/%B.tab.cc" | "$(GEN_DIR)/%B.tab.hh"
-: foreach $(SRC_DIR)/*.ll | $(GEN_DIR)/*.hh                  |> $(LEXER) -o "%o" "%f"                                                              |> "$(GEN_DIR)/%B.yy.cc"
-: foreach $(TEMPL_DIR)/*.*                                   |> ld --relocatable --format=binary --output="%o" "%f"                                |> "$(GEN_DIR)/template-%b.data"
-: foreach $(GEN_DIR)/*.data                                  |> objcopy --rename-section .data=.rodata,alloc,load,readonly,data,contents "%f" "%o" |> "$(BUILD_DIR)/%B.o"
-: foreach $(GEN_DIR)/*.cc $(SRC_DIR)/*.cpp | $(GEN_DIR)/*.hh |> $(CXX) $(CPPFLAGS) $(CXXFLAGS) -I "$(SRC_DIR)" -I "$(GEN_DIR)" -c "%f" -o "%o"     |> "$(BUILD_DIR)/%B.o"
-: $(BUILD_DIR)/*.o                                           |> $(CXX) %f $(LDFLAGS) $(LIBS)  -o "%o"                                              |> "$(PROG)"
+# Work around the template's file prefix
+: foreach $(BASE_DIR)/*.yy                 |> cd $(GEN_DIR) && $(PARSER) "../%f"        |> $(GEN_DIR)/%B.tab.cc $(GEN_DIR)/%B.tab.hh <CLI_PARSER>
+: foreach $(BASE_DIR)/*.ll | <CLI_PARSER>  |> cd $(GEN_DIR) && $(LEXER) -o "%o" "../%f" |> $(GEN_DIR)/%B.ll.cc <CLI_LEXER>
+
+: foreach $(SRC_DIR)/*.yy                                                                    |> !PARSE |> $(GEN_DIR)/%B.tab.cc | $(GEN_DIR)/%B.tab.hh <PARSER>
+: foreach $(SRC_DIR)/*.ll | <PARSER>                                                         |> !LEX   |> $(GEN_DIR)/%B.yy.cc <LEXER>
+: foreach $(TEMPL_DIR)/*.*                                                                   |> !TMPL  |> $(GEN_DIR)/template-%b.data {TEMPL}
+: foreach {TEMPL}                                                                            |> !TOBJ  |> $(BUILD_DIR)/%B.o {OBJS}
+: foreach $(GEN_DIR)/*.cc $(SRC_DIR)/*.cpp $(BASE_DIR)/*.cpp | <CLI_PARSER> <CLI_LEXER> <PARSER> <LEXER> {CLI} |> !CXX   |> $(BUILD_DIR)/%B.o {OBJS}
+: {OBJS}                                                                                     |> !LINK  |> $(PROG)
