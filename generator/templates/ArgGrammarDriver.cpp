@@ -46,9 +46,13 @@ namespace @@{argspec}@@ArgGrammar {
 		flagArguments.insert(flag);
 	}@@#any_parameters@@
 
-	void Driver::addArg(const ParamArg flag, std::vector<std::string> parameters) {
+	void Driver::addArg(const ParamArg flag, const std::vector<std::string>& parameters) {
 		paramArguments.insert_or_assign(flag, parameters);
-	}@@/any_parameters@@
+	}@@/any_parameters@@@@#any_positional_arguments@@
+
+	void Driver::addArg(const PositionalArg flag, const std::string& value) {
+		positionalArguments.insert_or_assign(flag, value);
+	}@@/any_positional_arguments@@
 
 	bool Driver::getArg(const FlagArg flag) const {
 		return (flagArguments.find(flag) != flagArguments.end());
@@ -60,7 +64,15 @@ namespace @@{argspec}@@ArgGrammar {
 		} catch (const std::out_of_range& ignored) {
 			return std::nullopt;
 		}
-	}@@/any_parameters@@
+	}@@/any_parameters@@@@#any_positional_arguments@@
+
+	std::optional<std::string> Driver::getArg(const PositionalArg flag) const {
+		try {
+			return std::make_optional(positionalArguments.at(flag));
+		} catch (const std::out_of_range& ignored) {
+			return std::nullopt;
+		}
+	}@@/any_positional_arguments@@
 
 	void Driver::setResult(Driver::Result result) {
 		this->result = result;

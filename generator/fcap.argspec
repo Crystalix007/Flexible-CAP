@@ -10,11 +10,12 @@ Usage:
 fcap file
 fcap OPTIONS file
 
-OPTIONS = --generated-folder | --base-name
+OPTIONS = --generated-folder | --base-name | --debug
 
 Arguments:
 
 --base-name,        -b, BASE_NAME, "the base filename to output"
+--debug,                           "whether to print out the variable context of each template"
 --generated-folder, -f, FOLDER,    "folder to output generated content to"
 --help,             -h,            "shows this help message"
 --license,                         "shows the license of this software"

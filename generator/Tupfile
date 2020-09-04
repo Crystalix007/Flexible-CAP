@@ -13,10 +13,10 @@ GEN_DIR   = $(BASE_DIR)/generated
 
 BOOTSTRAP_TUP = bootstrap/tup_rule.sh
 
-CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option -O0 -g
+CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option
 CPPFLAGS =
 LDFLAGS  =
-LIBS     = -lmstch -O0 -g
+LIBS     = -lmstch
 INCLUDES  = -I "$(SRC_DIR)" -I "$(GEN_DIR)"
 
 !PARSE = |> $(PARSER) -b "$(GEN_DIR)/%B" "%f"                                                  |>
@@ -41,14 +41,15 @@ run $(BOOTSTRAP_TUP) $(BASE_DIR) $(PROG) $(TEMPL_DIR)
 BUILD_DIR = build
 GEN_DIR   = generated
 INCLUDES  = -I "$(SRC_DIR)" -I "$(GEN_DIR)" -I "$(BASE_DIR)"
+CXXFLAGS += -DCOMMANDLINE_INTERFACE
 
 # Work around the template's file prefix
 : foreach $(BASE_DIR)/*.yy                 |> cd $(GEN_DIR) && $(PARSER) "../%f"        |> $(GEN_DIR)/%B.tab.cc $(GEN_DIR)/%B.tab.hh <CLI_PARSER>
 : foreach $(BASE_DIR)/*.ll | <CLI_PARSER>  |> cd $(GEN_DIR) && $(LEXER) -o "%o" "../%f" |> $(GEN_DIR)/%B.ll.cc <CLI_LEXER>
 
-: foreach $(SRC_DIR)/*.yy                                                                    |> !PARSE |> $(GEN_DIR)/%B.tab.cc | $(GEN_DIR)/%B.tab.hh <PARSER>
-: foreach $(SRC_DIR)/*.ll | <PARSER>                                                         |> !LEX   |> $(GEN_DIR)/%B.yy.cc <LEXER>
-: foreach $(TEMPL_DIR)/*.*                                                                   |> !TMPL  |> $(GEN_DIR)/template-%b.data {TEMPL}
-: foreach {TEMPL}                                                                            |> !TOBJ  |> $(BUILD_DIR)/%B.o {OBJS}
+: foreach $(SRC_DIR)/*.yy                                                                                      |> !PARSE |> $(GEN_DIR)/%B.tab.cc | $(GEN_DIR)/%B.tab.hh <PARSER>
+: foreach $(SRC_DIR)/*.ll | <PARSER>                                                                           |> !LEX   |> $(GEN_DIR)/%B.yy.cc <LEXER>
+: foreach $(TEMPL_DIR)/*.*                                                                                     |> !TMPL  |> $(GEN_DIR)/template-%b.data {TEMPL}
+: foreach {TEMPL}                                                                                              |> !TOBJ  |> $(BUILD_DIR)/%B.o {OBJS}
 : foreach $(GEN_DIR)/*.cc $(SRC_DIR)/*.cpp $(BASE_DIR)/*.cpp | <CLI_PARSER> <CLI_LEXER> <PARSER> <LEXER> {CLI} |> !CXX   |> $(BUILD_DIR)/%B.o {OBJS}
-: {OBJS}                                                                                     |> !LINK  |> $(PROG)
+: {OBJS}                                                                                                       |> !LINK  |> $(PROG)

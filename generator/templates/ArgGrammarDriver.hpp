@@ -25,10 +25,12 @@ namespace @@{argspec}@@ArgGrammar {
 		Result parse();
 
 		void addArg(const FlagArg flag);@@#any_parameters@@
-		void addArg(const ParamArg flag, const std::vector<std::string> arguments);@@/any_parameters@@
+		void addArg(const ParamArg flag, const std::vector<std::string>& arguments);@@/any_parameters@@@@#any_positional_arguments@@
+		void addArg(const PositionalArg flag, const std::string& value);@@/any_positional_arguments@@
 
 		bool getArg(const FlagArg flag) const;@@#any_parameters@@
-		std::optional<std::vector<std::string>> getArg(const ParamArg flag) const;@@/any_parameters@@
+		std::optional<std::vector<std::string>> getArg(const ParamArg flag) const;@@/any_parameters@@@@#any_positional_arguments@@
+		std::optional<std::string> getArg(const PositionalArg flag) const;@@/any_positional_arguments@@
 		void setResult(Result result);
 
 		const std::set<FlagArg>& getFlagArgs() const;@@#any_parameters@@

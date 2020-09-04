@@ -83,7 +83,9 @@ ARGUMENTS
 	;@@#positional_arguments@@
 
 POSITIONAL_@@{clean_token}@@
-	: POSITIONAL_ARGUMENT
+	: POSITIONAL_ARGUMENT {
+		driver.addArg(@@{argspec}@@ArgGrammar::PositionalArg::@@{clean_token}@@, $1);
+	}
 	;@@/positional_arguments@@@@#usage_rules@@
 
 ARGUMENT_@@{rule_name}@@

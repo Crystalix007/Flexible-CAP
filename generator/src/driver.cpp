@@ -99,6 +99,7 @@ void Grammar::Driver::addRule(std::string ruleName, std::vector<std::shared_ptr<
 mstch::map Grammar::Driver::getContext() const {
 	return mstch::map{ { "argspec", getSafeName() },
 		                 { "any_parameters", usesAnyParameters() },
+		                 { "any_positional_arguments", usesAnyPositionalArguments() },
 		                 { "argument_tokens", generateArgumentTokens() },
 		                 { "argument_explanations", generateArgumentExplanation() },
 		                 { "usage", generateUsageList() },

@@ -32,15 +32,25 @@ int main(int argc, char* argv[]) {
 		return 2;
 	}
 #else
-	fcapArgGrammar::Driver driver{ argc, argv };
-	auto res = driver.parse();
+	fcapArgGrammar::Driver cliDriver{ argc, argv };
+	auto res = cliDriver.parse();
 
-	if (res != Result::success) {
-		if (res == Result::completedAction)
+	if (res != fcapArgGrammar::Driver::Result::success) {
+		if (res == fcapArgGrammar::Driver::Result::completedAction)
 			return 0;
 
 		return -1;
 	}
+
+	const auto fileArg = cliDriver.getArg(fcapArgGrammar::PositionalArg::file);
+
+	if (!fileArg) {
+		std::cerr << "You must specify a file parameter." << std::endl;
+
+		return 1;
+	}
+
+	std::ifstream specFile{ fileArg.value() };
 #endif
 
 	driver.parse(specFile);
@@ -53,7 +63,7 @@ int main(int argc, char* argv[]) {
 	const auto context = driver.getContext();
 
 #ifdef COMMANDLINE_INTERFACE
-	if (driver.getArg(fcapArgGrammar::Driver::FlagArg::debug)) {
+	if (cliDriver.getArg(fcapArgGrammar::FlagArg::debug)) {
 		std::clog << DebugPrinter::printJSON(context) << std::endl;
 	}
 #endif
