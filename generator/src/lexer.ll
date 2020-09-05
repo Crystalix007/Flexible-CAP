@@ -176,8 +176,8 @@ LOWERCASE [a-z_]
 	return token::USAGE_END;
 }
 
-<USAGE_DETAILS>--{LOWERCASE}+ {
-	yyval->build<UsageArgument*>(new NonPositionalUsageArgument{ yytext });
+<USAGE_DETAILS>--{LONGOPT}+ {
+	yyval->build<UsageArgument*>(new NonPositionalUsageArgument{ yytext+2 });
 
 	return token::ARGUMENT;
 }

@@ -21,7 +21,11 @@ NonPositionalUsageArgument::NonPositionalUsageArgument(const std::string& argume
     : arg{ argument } {}
 
 std::string NonPositionalUsageArgument::toStr() const {
-	return this->arg;
+	return "--" + this->arg;
+}
+
+std::string NonPositionalUsageArgument::cleanToken() const {
+	return Argument::cleanToken(this->arg);
 }
 
 PositionalUsageArgument::PositionalUsageArgument(const std::string& argument) : arg{ argument } {}

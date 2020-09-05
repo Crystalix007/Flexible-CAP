@@ -8,6 +8,7 @@ help    "Flexible command-line parser generator"
 Usage:
 
 fcap file
+fcap --pretty-print file
 fcap OPTIONS file
 
 OPTIONS = --generated-folder | --base-name | --debug

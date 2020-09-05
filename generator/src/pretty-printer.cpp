@@ -43,7 +43,7 @@ namespace Grammar {
 				if (const auto npu =
 				        std::dynamic_pointer_cast<NonPositionalUsageArgument>(
 				            argument)) {
-					arguments += " --" + npu->toStr();
+					arguments += " " + npu->toStr();
 				} else if (const auto pu =
 				               std::dynamic_pointer_cast<PositionalUsageArgument>(
 				                   argument)) {

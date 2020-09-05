@@ -21,6 +21,7 @@ public:
 	virtual ~NonPositionalUsageArgument() = default;
 
 	virtual std::string toStr() const override;
+	virtual std::string cleanToken() const override;
 
 protected:
 	std::string arg;

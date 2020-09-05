@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <mstch/mstch.hpp>
@@ -55,14 +56,38 @@ int main(int argc, char* argv[]) {
 
 	driver.parse(specFile);
 
+#ifdef COMMANDLINE_INTERFACE
+	/*
+	 * Pretty print.
+	 */
+
+
+	if (cliDriver.getArg(fcapArgGrammar::FlagArg::pretty_print)) {
+		Grammar::PrettyPrinter pp{ driver };
+		std::cout << pp.print() << std::endl;
+	} else {
+#endif
+
 	/*
 	 * Generate the output files
 	 *
 	 */
 
-	const auto context = driver.getContext();
+	auto context = driver.getContext();
+	std::filesystem::path outputPath{ std::filesystem::current_path() };
 
 #ifdef COMMANDLINE_INTERFACE
+	if (const auto outputFolder = cliDriver.getArg(fcapArgGrammar::ParamArg::generated_folder)) {
+		std::filesystem::path p{ outputFolder.value()[0] };
+
+		if (!std::filesystem::is_directory(p)) {
+			std::cerr << "Cannot output to '" << p.generic_string() << "' as this is not a valid directory" << std::endl;
+			return 3;
+		}
+
+		outputPath = p;
+	}
+
 	if (cliDriver.getArg(fcapArgGrammar::FlagArg::debug)) {
 		std::clog << DebugPrinter::printJSON(context) << std::endl;
 	}
@@ -70,21 +95,17 @@ int main(int argc, char* argv[]) {
 
 	for (const auto& templateFile : templateFiles) {
 		std::string strTemplate{ templateFile.contents };
-		std::ofstream outputFile{ driver.getSafeName() +
-			                        symbolNameToOutputFile(templateFile.symbolName) };
+		const auto symbolFileName = symbolNameToOutputFile(templateFile.symbolName);
+		const std::filesystem::path templPath = outputPath / (driver.getSafeName() + symbolFileName);
+		std::ofstream outputFile{ templPath };
 
 		outputFile << mstch::render(strTemplate, context);
 		outputFile.close();
 	}
 
-	/*
-	 * Pretty print.
-	 *
-
-	Grammar::PrettyPrinter pp{ driver };
-	std::cout << pp.print() << std::endl;
-
-	*/
+#ifdef COMMANDLINE_INTERFACE
+	}
+#endif
 
 	return 0;
 }

@@ -169,12 +169,12 @@ mstch::array Grammar::Driver::generateUsageList() const {
 		for (const auto& argument : usage.arguments) {
 			if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
 				arguments.push_back(mstch::map{
-						{ "clean_token", argument->toStr()},
+						{ "clean_token", argument->cleanToken()},
 						{ "positional", true },
 				});
 			} else {
 				arguments.push_back(mstch::map{
-						{ "clean_token", argument->toStr() },
+						{ "clean_token", argument->cleanToken() },
 						{ "positional", false },
 				});
 			}
