@@ -1,10 +1,8 @@
 #pragma once
 
-#include "argument.hpp"
 #include "parser.tab.hh"
+#include "parse-tree.hpp"
 #include "scanner.hpp"
-#include "usage.hpp"
-#include "rule.hpp"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -37,16 +35,7 @@ namespace Grammar {
 		mstch::map getContext() const;
 		std::string getSafeName() const;
 
-	protected:
-		std::string getProgramName() const;
-		std::string getVersion() const;
-		std::string getLicense() const;
-		std::string getHelp() const;
-
-		std::vector<Usage> getUsages() const;
-		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> getRules() const;
-		std::set<std::shared_ptr<Argument>, ArgumentComparator>
-		getArguments() const;
+		ParseTree getParseTree() const;
 
 	private:
 		void parse_helper(std::istream& iss);
@@ -74,15 +63,8 @@ namespace Grammar {
 		/*
 		 * specialised data store
 		 */
+		ParseTree parseTree{};
 
-		std::string programName, version, license;
-		std::set<std::shared_ptr<Argument>, ArgumentComparator> arguments;
-		std::optional<std::string> helpAddendum;
-		std::vector<Usage> usages;
-		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> rules;
-		size_t maxArgLength, maxParamLength;
-
-		friend class Argument;
 		friend class PrettyPrinter;
 	};
 } // namespace Grammar

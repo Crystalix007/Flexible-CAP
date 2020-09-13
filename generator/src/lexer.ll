@@ -6,7 +6,7 @@
 #include <vector>
 #include "parser.tab.hh"
 #include "scanner.hpp"
-#include "argument.hpp"
+#include "parse-tree.hpp"
 
 #undef YY_DECL
 #define YY_DECL int Grammar::Scanner::yylex(Grammar::Parser::semantic_type* const lval, Grammar::Parser::location_type* lloc)

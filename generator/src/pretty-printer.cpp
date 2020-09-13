@@ -3,19 +3,14 @@
 #include <numeric>
 
 namespace Grammar {
-	PrettyPrinter::PrettyPrinter(const Driver& driver)
-	    : programName{ driver.getProgramName() }, version{ driver.getVersion() },
-	      license{ driver.getLicense() }, help{ driver.getHelp() },
-	      usages{ driver.getUsages() }, rules{ driver.getRules() }, arguments{
-		      driver.getArguments()
-	      } {}
+	PrettyPrinter::PrettyPrinter(const ParseTree& parseTree) : parseTree{ parseTree } {}
 
 	std::string PrettyPrinter::print() const {
 		std::vector<std::vector<std::string>> grid{
-			{ "program ", "" + programName + "" },
-			{ "version ", "\"" + version + "\"" },
-			{ "license ", "\"" + license + "\"" },
-			{ "help ", "\"" + help + "\"" },
+			{ "program ", "" + parseTree.getProgramName() + "" },
+			{ "version ", "\"" + parseTree.getVersion() + "\"" },
+			{ "license ", "\"" + parseTree.getLicense() + "\"" },
+			{ "help ", "\"" + parseTree.getHelp() + "\"" },
 		};
 
 		return "Program:\n"
@@ -36,7 +31,7 @@ namespace Grammar {
 	std::string PrettyPrinter::getUsages() const {
 		std::vector<std::vector<std::string>> grid{};
 
-		for (const auto& usage : usages) {
+		for (const auto& usage : parseTree.getUsages()) {
 			std::string arguments{};
 
 			for (const auto& argument : usage.arguments) {
@@ -57,7 +52,7 @@ namespace Grammar {
 				}
 			}
 
-			grid.push_back({ programName, arguments });
+			grid.push_back({ parseTree.getProgramName(), arguments });
 		}
 
 		return align(grid) + "\n";
@@ -66,7 +61,7 @@ namespace Grammar {
 	std::string PrettyPrinter::getRules() const {
 		std::vector<std::vector<std::string>> grid{};
 
-		for (const auto& [rule, definition] : rules) {
+		for (const auto& [rule, definition] : parseTree.getRules()) {
 			std::vector<std::string> ruleStrings{};
 			std::transform(std::begin(definition), std::end(definition),
 			               std::back_inserter(ruleStrings),
@@ -89,7 +84,7 @@ namespace Grammar {
 	std::string PrettyPrinter::getArguments() const {
 		std::vector<std::vector<std::string>> grid{};
 
-		for (const auto& argument : arguments) {
+		for (const auto& argument : parseTree.getArguments()) {
 			const std::string longopt{ "--" + argument->argument + ", " };
 			std::string shortOpt{};
 			std::string parameterStr{};

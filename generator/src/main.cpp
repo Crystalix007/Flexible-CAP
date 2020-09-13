@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 
 	if (cliDriver.getArg(fcapArgGrammar::FlagArg::pretty_print)) {
-		Grammar::PrettyPrinter pp{ driver };
+		Grammar::PrettyPrinter pp{ driver.getParseTree() };
 		std::cout << pp.print() << std::endl;
 	} else {
 #endif

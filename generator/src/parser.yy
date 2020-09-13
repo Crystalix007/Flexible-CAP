@@ -10,8 +10,7 @@
 %code requires{
 #	include <memory>
 #	include <optional>
-#	include "usage.hpp"
-#	include "rule.hpp"
+#	include "parse-tree.hpp"
 
 	namespace Grammar {
 		class Driver;

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "driver.hpp"
+#include "parse-tree.hpp"
 
 namespace Grammar {
 	class PrettyPrinter {
 	public:
-		PrettyPrinter(const Driver& driver);
+		PrettyPrinter(const ParseTree& parseTree);
 		virtual ~PrettyPrinter() = default;
 
 		std::string print() const;
@@ -23,13 +24,6 @@ namespace Grammar {
 		static std::string fill(size_t size, std::string base, char fillCharacter);
 
 	protected:
-		const std::string programName;
-		const std::string version;
-		const std::string license;
-		const std::string help;
-
-		std::vector<Usage> usages;
-		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> rules;
-		std::set<std::shared_ptr<Argument>, ArgumentComparator> arguments;
+		const ParseTree parseTree;
 	};
 } // namespace Grammarrules
