@@ -6,6 +6,7 @@
 #include "driver.hpp"
 #include "pretty-printer.hpp"
 #include "templates.hpp"
+#include "semantic-checking.hpp"
 
 #ifdef COMMANDLINE_INTERFACE
 # include "debugJSON.hpp"
@@ -92,6 +93,10 @@ int main(int argc, char* argv[]) {
 		std::clog << DebugPrinter::printJSON(context) << std::endl;
 	}
 #endif
+
+	if (!checkSemantics(driver.getParseTree())) {
+		return 4;
+	}
 
 	for (const auto& templateFile : templateFiles) {
 		std::string strTemplate{ templateFile.contents };
