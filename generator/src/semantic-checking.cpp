@@ -30,6 +30,24 @@ namespace Grammar {
 						          << " which has not been defined.\n";
 						return false;
 					}
+				} else if (const auto argumentAlternation =
+				               std::dynamic_pointer_cast<ArgumentRuleAlternation>(
+				                   alternation)) {
+					const auto& arguments = parseTree.getArguments();
+
+					/*
+					 * Check if this rule doesn't have a specification.
+					 */
+					if (std::find_if(arguments.begin(), arguments.end(),
+					                 [argumentAlternation](const auto& argument) {
+						                 return argument->cleanToken() ==
+						                        argumentAlternation->cleanToken();
+					                 }) == arguments.end()) {
+						std::cerr << "Definition of " << name << " includes argument "
+						          << argumentAlternation->toStr()
+						          << " which has not been defined\n";
+						return false;
+					}
 				}
 			}
 		}
@@ -38,8 +56,9 @@ namespace Grammar {
 	}
 
 	using RuleMap = std::map<std::string, std::set<std::string>>;
-	std::optional<std::string> containsLoop(const std::string& baseRule, RuleMap rules,
-	                  const std::string currentRule);
+	std::optional<std::string> containsLoop(const std::string& baseRule,
+	                                        RuleMap rules,
+	                                        const std::string currentRule);
 
 	bool checkNoCircularRules(const ParseTree& parseTree) {
 		const auto& rules = parseTree.getRules();
@@ -63,7 +82,9 @@ namespace Grammar {
 
 		for (const auto& [key, _] : childRules) {
 			if (const auto offendingChildRule = containsLoop(key, childRules, key)) {
-				std::cerr << "Definition for rule " << key << " has cyclical dependency on " << offendingChildRule.value() << "\n";
+				std::cerr << "Definition for rule " << key
+				          << " has cyclical dependency on "
+				          << offendingChildRule.value() << "\n";
 				return false;
 			}
 		}
@@ -71,8 +92,9 @@ namespace Grammar {
 		return true;
 	}
 
-	std::optional<std::string> containsLoop(const std::string& baseRule, RuleMap rules,
-	                  const std::string currentRule) {
+	std::optional<std::string> containsLoop(const std::string& baseRule,
+	                                        RuleMap rules,
+	                                        const std::string currentRule) {
 		/*
 		 * If we've removed this rule.
 		 */
