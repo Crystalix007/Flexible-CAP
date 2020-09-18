@@ -1,3 +1,9 @@
 /fcap
 /generated/
 /bootstrap/
+
+# Development specific ignore files
+/.clangd/
+/.undodir/
+/Session.vim
+/compile_commands.json
