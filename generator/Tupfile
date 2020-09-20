@@ -16,7 +16,7 @@ BOOTSTRAP_TUP = bootstrap/tup_rule.sh
 CXXFLAGS = -pedantic -std=c++17 -Wall -Wno-unused-parameter -Wno-reorder -Wno-sign-compare -Wno-address -Wno-noexcept-type -Wno-unknown-attributes -Wno-unknown-warning-option
 CPPFLAGS =
 LDFLAGS  =
-LIBS     = -lmstch
+LIBS     = -lmstch -lstdc++fs
 INCLUDES  = -I "$(SRC_DIR)" -I "$(GEN_DIR)"
 
 !PARSE = |> $(PARSER) -b "$(GEN_DIR)/%B" "%f"                                                  |>
@@ -53,3 +53,5 @@ CXXFLAGS += -DCOMMANDLINE_INTERFACE
 : foreach {TEMPL}                                                                                              |> !TOBJ  |> $(BUILD_DIR)/%B.o {OBJS}
 : foreach $(GEN_DIR)/*.cc $(SRC_DIR)/*.cpp $(BASE_DIR)/*.cpp | <CLI_PARSER> <CLI_LEXER> <PARSER> <LEXER> {CLI} |> !CXX   |> $(BUILD_DIR)/%B.o {OBJS}
 : {OBJS}                                                                                                       |> !LINK  |> $(PROG)
+
+.gitignore
