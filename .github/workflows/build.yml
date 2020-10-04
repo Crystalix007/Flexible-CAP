@@ -49,37 +49,12 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE && docker build . --file Dockerfile --tag "$IMAGE_NAME"
 
-      # Saves the Docker image for upload
-      - name: Save Docker image
-        run: docker save --output "$IMAGE_NAME.tar" "$IMAGE_NAME"
-
-      # Upload Docker image artifact
-      - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-image
-          path: "$IMAGE_NAME.tar"
-
-  push:
-    needs: build
-
-    runs-on: ubuntu-latest
-
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-
-    steps:
       - name: Log into Docker Hub registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "$IMAGE_ACCOUNT" --password-stdin
 
-      - name: Download Docker image artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-image
-
-      - name: Load Docker image
-        run: docker load --input "$IMAGE_NAME.tar"
-
       - name: Push image to Docker Hub registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           IMAGE_ID="$IMAGE_ACCOUNT/$IMAGE_NAME"
           # Change all uppercase to lowercase
