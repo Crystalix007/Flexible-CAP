@@ -1,0 +1,5 @@
+{
+	"args": "--version",
+	"input": "",
+	"output": "A version of a program"
+}

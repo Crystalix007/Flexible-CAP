@@ -1,0 +1,5 @@
+{
+	"args": "--license",
+	"input": "",
+	"output": "This is a license.\nThere are multiple lines.\n"
+}

@@ -1,0 +1,11 @@
+Program:
+
+program program-name
+version "A version of a program"
+license "This is a license.\nThere are multiple lines."
+help    "This program outputs some details about itself. It has no functionality."
+
+Usage:
+
+program-name
+

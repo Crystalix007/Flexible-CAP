@@ -1,0 +1,32 @@
+name: CI-test
+
+env:
+  IMAGE_NAME: fcap
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Builds the generator program
+      - name: Build generator in Docker container
+        run: |
+          cd $GITHUB_WORKSPACE && docker build . --file Dockerfile --tag "$IMAGE_NAME"
+
+      # Builds the test container from generator image
+      - name: Build test suite in Docker container
+        run: |
+          cd $GITHUB_WORKSPACE && docker build . --file Dockerfile.test --build-arg "BASE_IMAGE=${IMAGE_NAME}" --tag "${IMAGE_NAME}-test"
+
+      # Runs all the tests in Docker container
+      - name: Run tests
+        run: |
+          cd $GITHUB_WORKSPACE
+          docker run -v "$(pwd)/tests:/tests" "${IMAGE_NAME}-test"
