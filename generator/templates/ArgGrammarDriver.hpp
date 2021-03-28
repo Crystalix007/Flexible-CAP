@@ -17,7 +17,7 @@ namespace @@{argspec}@@ArgGrammar {
 
 	class Driver {
 	public:
-		enum class Result { success, completedAction, wrongArgument };
+		enum class Result { success, completedAction, failure };
 
 		Driver(int argc, char* argv[]);
 		virtual ~Driver();

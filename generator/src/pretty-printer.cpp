@@ -3,7 +3,8 @@
 #include <numeric>
 
 namespace Grammar {
-	PrettyPrinter::PrettyPrinter(const ParseTree& parseTree) : parseTree{ parseTree } {}
+	PrettyPrinter::PrettyPrinter(const ParseTree& parseTree)
+	    : parseTree{ parseTree } {}
 
 	std::string PrettyPrinter::print() const {
 		std::vector<std::vector<std::string>> grid{
@@ -15,13 +16,12 @@ namespace Grammar {
 
 		return "Program:\n"
 		       "\n" +
-		       align(grid) + "\n"
+		       align(grid) +
+		       "\n"
 		       "\n"
 		       "Usage:\n"
 		       "\n" +
-		       getUsages() +
-		       "\n" +
-		       getRules() +
+		       getUsages() + "\n" + getRules() +
 		       "\n"
 		       "Arguments:\n"
 		       "\n" +

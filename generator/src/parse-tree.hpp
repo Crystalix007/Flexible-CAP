@@ -160,7 +160,8 @@ namespace Grammar {
 		std::string getHelp() const;
 
 		std::vector<Usage> getUsages() const;
-		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> getRules() const;
+		std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>>
+		getRules() const;
 		std::set<std::shared_ptr<Argument>, ArgumentComparator>
 		getArguments() const;
 

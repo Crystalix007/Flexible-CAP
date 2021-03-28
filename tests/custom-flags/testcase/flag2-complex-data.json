@@ -1,0 +1,5 @@
+{
+	"args": "--flag2 a_complex-and+long/argument",
+	"output": "program --flag2 (a_complex-and+long/argument)"
+}
+

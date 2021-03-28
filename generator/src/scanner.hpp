@@ -1,9 +1,9 @@
 #pragma once
 
 #if !defined(yyFlexLexerOnce)
-# define yyFlexLexer __yyFlexLexer
+#	define yyFlexLexer __yyFlexLexer
 #	include <FlexLexer.h>
-# undef yyFlexLexer
+#	undef yyFlexLexer
 #endif
 
 #include "parser.tab.hh"

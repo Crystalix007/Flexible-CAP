@@ -53,7 +53,7 @@ ARGUMENTS
 		std::cout
 			<< "Usage:\n"
 			<< "\n"@@#usage@@
-			<< driver.getArgv()[0] << "@@#flags@@ @@{.}@@@@/flags@@@@#positional@@ <@@{.}@@>@@/positional@@\n"@@/usage@@
+			<< driver.getArgv()[0] << "@@#arguments@@@@#flag@@ @@{.}@@@@/flag@@@@/arguments@@@@#arguments@@@@#positional@@ <@@{.}@@>@@/positional@@@@/arguments@@\n"@@/usage@@
 			<< driver.getArgv()[0] << " --help\n"
 			<< driver.getArgv()[0] << " --version\n"
 			<< driver.getArgv()[0] << " --license\n"
@@ -62,7 +62,7 @@ ARGUMENTS
 			<< "\n"@@#argument_explanations@@
 			<< "@@{.}@@\n"
 			<< "\n"@@/argument_explanations@@@@#argument_tokens@@
-			<< " @@#short_argument@@-@@{short_argument}@@,@@/short_argument@@@@^short_argument@@   @@/short_argument@@ --@@{argument}@@@@{parameter_align_spacing}@@@@#parameters@@ <@@{name}@@>@@#next_state@@,@@/next_state@@@@/parameters@@@@^parameters@@   @@/parameters@@ @@{explain_align_spacing}@@@@{usage}@@\n"@@/argument_tokens@@
+			<< " @@#short_argument@@-@@{short_argument}@@,@@/short_argument@@@@^short_argument@@   @@/short_argument@@ --@@{argument}@@@@{parameter_align_spacing}@@@@#parameters@@ <@@{name}@@>@@/parameters@@ @@{explain_align_spacing}@@@@{usage}@@\n"@@/argument_tokens@@
 			<< "\n"
 			<< "@@{help_addendum}@@"@@/help_addendum@@
 			<< std::endl;
@@ -79,7 +79,9 @@ ARGUMENTS
 		driver.addArg(@@{argspec}@@ArgGrammar::FlagArg::license);
 		driver.setResult(Driver::Result::completedAction);
 	}@@#usage@@
-	|@@#arguments@@ @@#positional@@POSITIONAL@@/positional@@@@^positional@@ARGUMENT@@/positional@@_@@{clean_token}@@@@/arguments@@@@/usage@@
+	|@@#arguments@@ @@#positional@@POSITIONAL@@/positional@@@@^positional@@ARGUMENT@@/positional@@_@@{clean_token}@@@@/arguments@@ {
+		driver.setResult(Driver::Result::success);
+	}@@/usage@@
 	;@@#positional_arguments@@
 
 POSITIONAL_@@{clean_token}@@
@@ -98,4 +100,5 @@ ARGUMENT_@@{rule_name}@@
 void @@{argspec}@@ArgGrammar::Parser::error(const std::string& err_message)
 {
 	std::cerr << "Error: " << err_message << '\n';
+	driver.setResult(Driver::Result::failure);
 }

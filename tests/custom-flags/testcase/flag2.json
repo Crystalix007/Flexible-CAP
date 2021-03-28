@@ -1,0 +1,4 @@
+{
+	"args": "--flag2 a",
+	"output": "program --flag2 (a)"
+}

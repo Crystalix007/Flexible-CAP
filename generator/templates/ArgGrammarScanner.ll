@@ -36,7 +36,7 @@ LONGARG [[:alnum:]][[:alnum:]\-]*
 	for (const auto& parameter : parameters)
 		std::cerr << "\t- \'" << parameter << "\'\n";
 
-	setResult(Result::wrongArgument);
+	setResult(Result::failure);
 }@@/has_parameters@@@@/argument_tokens@@
 
 <*>-- { /* end of arguments */
@@ -55,7 +55,6 @@ LONGARG [[:alnum:]][[:alnum:]\-]*
 
 <SHORT_ARGUMENTS>@@{short_argument}@@ {@@#has_parameters@@
 	BEGIN(@@{clean_token}@@_PARAMETER_1);
-	resetVal = std::nullopt;
 	parameters = {};@@/has_parameters@@@@^has_parameters@@
 	driver.addArg(@@{argspec}@@ArgGrammar::FlagArg::@@{clean_token}@@);
 	return token::ARGUMENT_@@{clean_token}@@;@@/has_parameters@@
@@ -74,31 +73,30 @@ LONGARG [[:alnum:]][[:alnum:]\-]*
 
 <INITIAL>--{LONGARG} {
 	std::cerr << "Unknown argument: \'" << yytext << "\' found\n";
-	setResult(Result::wrongArgument);
+	setResult(Result::failure);
 }
 
 <INITIAL>--{ANYTHING}+ { /* show common error for invalid option */
 	std::cerr << "Invalid argument: \'" << yytext << "\' found\n";
-	setResult(Result::wrongArgument);
+	setResult(Result::failure);
 }
 
 <SHORT_ARGUMENTS>{ANYTHING} {
 	std::cerr << "Unknown argument \'-" << yytext << "\' found\n";
-	setResult(Result::wrongArgument);
+	setResult(Result::failure);
 }
 
 	/** Check for short argument **/
 
 <INITIAL>-/{ANYTHING}+ {
 	BEGIN(SHORT_ARGUMENTS);
-	resetVal = INITIAL;
 }
 
 	/** Check for possible unknown arguments **/
 
 <POSITIONAL_ARGUMENTS>{ANYTHING}+ {
 	/* std::cerr << "Unknown positional argument \'" << yytext << "\' found\n";
-	setResult(Result::wrongArgument); */
+	setResult(Result::failure); */
 	yyval->build<std::string>(yytext);
 	return token::POSITIONAL_ARGUMENT;
 }
@@ -106,7 +104,7 @@ LONGARG [[:alnum:]][[:alnum:]\-]*
 <INITIAL>{ANYTHING}* { /* unknown positional argument */
 	BEGIN(POSITIONAL_ARGUMENTS);
 	/* std::cerr << "Unknown positional argument \'" << yytext << "\' found\n";
-	setResult(Result::wrongArgument); */
+	setResult(Result::failure); */
 	yyval->build<std::string>(yytext);
 	return token::POSITIONAL_ARGUMENT;
 }
@@ -115,9 +113,10 @@ LONGARG [[:alnum:]][[:alnum:]\-]*
 
 namespace @@{argspec}@@ArgGrammar {
 	void Scanner::resetOnWrap() {
-		if (resetVal)
-			BEGIN(*resetVal);
-
-		resetVal = INITIAL;
+		switch (YYSTATE) {
+			case SHORT_ARGUMENTS:
+				BEGIN(INITIAL);
+				break;
+		}
 	}
 }

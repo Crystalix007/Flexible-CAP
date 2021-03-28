@@ -1,6 +1,7 @@
 ARG BASE_IMAGE=fcap
 
 FROM ${BASE_IMAGE}
+RUN apt-get update
 RUN apt-get install -y jq
 WORKDIR /tests
 ENV GENERATOR=fcap

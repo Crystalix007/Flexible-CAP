@@ -5,11 +5,11 @@
 
 #include "driver.hpp"
 #include "pretty-printer.hpp"
-#include "templates.hpp"
 #include "semantic-checking.hpp"
+#include "templates.hpp"
 
 #ifdef COMMANDLINE_INTERFACE
-# include "debugJSON.hpp"
+#	include "debugJSON.hpp"
 #	include "fcapArgGrammarDriver.hpp"
 #endif
 
@@ -29,8 +29,9 @@ int main(int argc, char* argv[]) {
 	std::ifstream specFile{ argv[1] };
 
 	if (!specFile) {
-		std::cerr << "Failed to open file '" << argv[1]
-		          << "' for writing.\n Make sure this file exists and is readable.\n";
+		std::cerr
+		    << "Failed to open file '" << argv[1]
+		    << "' for writing.\n Make sure this file exists and is readable.\n";
 		return 2;
 	}
 #else
@@ -62,51 +63,54 @@ int main(int argc, char* argv[]) {
 	 * Pretty print.
 	 */
 
-
 	if (cliDriver.getArg(fcapArgGrammar::FlagArg::pretty_print)) {
 		Grammar::PrettyPrinter pp{ driver.getParseTree() };
 		std::cout << pp.print() << std::endl;
 	} else {
 #endif
 
-	/*
-	 * Generate the output files
-	 *
-	 */
+		/*
+		 * Generate the output files
+		 *
+		 */
 
-	auto context = driver.getContext();
-	std::filesystem::path outputPath{ std::filesystem::current_path() };
+		auto context = driver.getContext();
+		std::filesystem::path outputPath{ std::filesystem::current_path() };
 
 #ifdef COMMANDLINE_INTERFACE
-	if (const auto outputFolder = cliDriver.getArg(fcapArgGrammar::ParamArg::generated_folder)) {
-		std::filesystem::path p{ outputFolder.value()[0] };
+		if (const auto outputFolder =
+		        cliDriver.getArg(fcapArgGrammar::ParamArg::generated_folder)) {
+			std::filesystem::path p{ outputFolder.value()[0] };
 
-		if (!std::filesystem::is_directory(p)) {
-			std::cerr << "Cannot output to '" << p.generic_string() << "' as this is not a valid directory" << std::endl;
-			return 3;
+			if (!std::filesystem::is_directory(p)) {
+				std::cerr << "Cannot output to '" << p.generic_string()
+				          << "' as this is not a valid directory" << std::endl;
+				return 3;
+			}
+
+			outputPath = p;
 		}
 
-		outputPath = p;
-	}
-
-	if (cliDriver.getArg(fcapArgGrammar::FlagArg::debug)) {
-		std::clog << DebugPrinter::printJSON(context) << std::endl;
-	}
+		if (cliDriver.getArg(fcapArgGrammar::FlagArg::debug)) {
+			std::clog << DebugPrinter::printJSON(context) << std::endl;
+		}
 #endif
 
-	if (!checkSemantics(driver.getParseTree())) {
-		return 4;
-	}
+		if (!checkSemantics(driver.getParseTree())) {
+			return 4;
+		}
 
-	for (const auto& templateFile : templateFiles) {
-		std::string strTemplate{ templateFile.contents };
-		const auto symbolFileName = symbolNameToOutputFile(templateFile.symbolName);
-		const std::filesystem::path templPath = outputPath / (driver.getSafeName() + symbolFileName);
-		std::ofstream outputFile{ templPath };
+		for (const auto& templateFile : templateFiles) {
+			std::string strTemplate{ templateFile.contents };
+			const auto symbolFileName =
+			    symbolNameToOutputFile(templateFile.symbolName);
+			const std::filesystem::path templPath =
+			    outputPath / (driver.getSafeName() + symbolFileName);
+			std::ofstream outputFile{ templPath };
 
-		outputFile << mstch::render(strTemplate, context);
-		outputFile.close();
-	}
+			outputFile << mstch::render(strTemplate, context);
+			outputFile.close();
+		}
 
 #ifdef COMMANDLINE_INTERFACE
 	}
@@ -117,11 +121,12 @@ int main(int argc, char* argv[]) {
 
 std::string symbolNameToOutputFile(const std::string& symbolName) {
 	std::string outputFileName(symbolName.size(), static_cast<char>(NULL));
-	std::transform(symbolName.begin(), symbolName.end(), outputFileName.begin(), [](char letter) {
-		if (letter == '_')
-			return '.';
-		return letter;
-	});
+	std::transform(symbolName.begin(), symbolName.end(), outputFileName.begin(),
+	               [](char letter) {
+		               if (letter == '_')
+			               return '.';
+		               return letter;
+	               });
 
 	return outputFileName;
 }

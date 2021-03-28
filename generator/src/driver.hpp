@@ -1,7 +1,7 @@
 #pragma once
 
-#include "parser.tab.hh"
 #include "parse-tree.hpp"
+#include "parser.tab.hh"
 #include "scanner.hpp"
 #include <iostream>
 #include <map>
@@ -29,7 +29,8 @@ namespace Grammar {
 		void setLicense(std::string license);
 		void setHelpAddendum(std::string addendum);
 		void addUsage(Usage usage);
-		void addRule(std::string ruleName, std::vector<std::shared_ptr<RuleAlternation>> options);
+		void addRule(std::string ruleName,
+		             std::vector<std::shared_ptr<RuleAlternation>> options);
 		void addArg(std::shared_ptr<Argument> argument);
 
 		mstch::map getContext() const;
@@ -55,8 +56,9 @@ namespace Grammar {
 		mstch::array generatePositionalList() const;
 		mstch::node getHelpAddendum() const;
 
-		static std::string explainRule(const std::string& ruleName,
-		                               const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions);
+		static std::string explainRule(
+		    const std::string& ruleName,
+		    const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions);
 		static std::string spaceN(size_t spaceCount);
 		mstch::map alignArg(Argument& arg) const;
 

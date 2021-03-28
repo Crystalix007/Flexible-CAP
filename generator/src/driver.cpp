@@ -6,11 +6,12 @@
 
 namespace Grammar {
 	Driver::Driver() {
-		addArg(std::make_shared<FlagArgument>("help", std::nullopt, "shows this help message"));
-		addArg(std::make_shared<FlagArgument>("version", std::nullopt,
-																					"shows the version of this software"));
-		addArg(std::make_shared<FlagArgument>("license", std::nullopt,
-																					"shows the license of this software"));
+		addArg(std::make_shared<FlagArgument>("help", std::nullopt,
+		                                      "shows this help message"));
+		addArg(std::make_shared<FlagArgument>(
+		    "version", std::nullopt, "shows the version of this software"));
+		addArg(std::make_shared<FlagArgument>(
+		    "license", std::nullopt, "shows the license of this software"));
 	}
 
 	Driver::~Driver() {
@@ -41,7 +42,8 @@ namespace Grammar {
 			scanner = new Scanner(&iss);
 			// scanner->set_debug(1);
 		} catch (const std::bad_alloc& ba) {
-			std::cerr << "Failed to allocate scanner: \"" << ba.what() << "\". Exiting!\n";
+			std::cerr << "Failed to allocate scanner: \"" << ba.what()
+			          << "\". Exiting!\n";
 			exit(EXIT_FAILURE);
 		}
 
@@ -50,7 +52,8 @@ namespace Grammar {
 			parser = new Parser(*scanner, *this);
 			// parser->set_debug_level(1);
 		} catch (const std::bad_alloc& ba) {
-			std::cerr << "Failed to allocate parser: \"" << ba.what() << "\". Exiting!\n";
+			std::cerr << "Failed to allocate parser: \"" << ba.what()
+			          << "\". Exiting!\n";
 			exit(EXIT_FAILURE);
 		}
 
@@ -77,8 +80,10 @@ namespace Grammar {
 	}
 
 	void Driver::addArg(std::shared_ptr<Argument> argument) {
-		parseTree.maxArgLength = std::max(parseTree.maxArgLength, argument->argStrLength());
-		parseTree.maxParamLength = std::max(parseTree.maxParamLength, argument->paramStrLength());
+		parseTree.maxArgLength =
+		    std::max(parseTree.maxArgLength, argument->argStrLength());
+		parseTree.maxParamLength =
+		    std::max(parseTree.maxParamLength, argument->paramStrLength());
 		const auto prevVal = parseTree.arguments.find(argument);
 
 		if (prevVal != parseTree.arguments.end()) {
@@ -92,29 +97,32 @@ namespace Grammar {
 		parseTree.usages.push_back(usage);
 	}
 
-	void Driver::addRule(std::string ruleName, std::vector<std::shared_ptr<RuleAlternation>> options) {
+	void Driver::addRule(std::string ruleName,
+	                     std::vector<std::shared_ptr<RuleAlternation>> options) {
 		parseTree.rules.insert({ ruleName, options });
 	}
 
 	mstch::map Driver::getContext() const {
-		return mstch::map{ { "argspec", getSafeName() },
-											 { "any_parameters", usesAnyParameters() },
-											 { "any_positional_arguments", usesAnyPositionalArguments() },
-											 { "argument_tokens", generateArgumentTokens() },
-											 { "argument_explanations", generateArgumentExplanation() },
-											 { "usage", generateUsageList() },
-											 { "positional_arguments", generatePositionalList() },
-											 { "usage_rules", generateUsageRuleList() },
-											 { "version", parseTree.getVersion() },
-											 { "license", parseTree.getLicense() },
-											 { "help_addendum", getHelpAddendum() } };
+		return mstch::map{
+			{ "argspec", getSafeName() },
+			{ "any_parameters", usesAnyParameters() },
+			{ "any_positional_arguments", usesAnyPositionalArguments() },
+			{ "argument_tokens", generateArgumentTokens() },
+			{ "argument_explanations", generateArgumentExplanation() },
+			{ "usage", generateUsageList() },
+			{ "positional_arguments", generatePositionalList() },
+			{ "usage_rules", generateUsageRuleList() },
+			{ "version", parseTree.getVersion() },
+			{ "license", parseTree.getLicense() },
+			{ "help_addendum", getHelpAddendum() }
+		};
 	}
 
 	std::string Driver::getSafeName() const {
 		std::string safeName{ parseTree.getProgramName() };
 		safeName.erase(std::remove_if(safeName.begin(), safeName.end(),
-																	[](char letter) { return !isalpha(letter); }),
-									 safeName.end());
+		                              [](char letter) { return !isalpha(letter); }),
+		               safeName.end());
 
 		return safeName;
 	}
@@ -169,13 +177,15 @@ namespace Grammar {
 			for (const auto& argument : usage.arguments) {
 				if (std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
 					arguments.push_back(mstch::map{
-							{ "clean_token", argument->cleanToken()},
-							{ "positional", true },
+					    { "clean_token", argument->cleanToken() },
+					    { "positional", argument->toStr() },
+					    { "flag", false },
 					});
 				} else {
 					arguments.push_back(mstch::map{
-							{ "clean_token", argument->cleanToken() },
-							{ "positional", false },
+					    { "clean_token", argument->cleanToken() },
+					    { "positional", false },
+					    { "flag", argument->toStr() },
 					});
 				}
 			}
@@ -187,11 +197,13 @@ namespace Grammar {
 	}
 
 	mstch::array Driver::generatePositionalList() const {
-		std::set<std::shared_ptr<PositionalUsageArgument>, UsageComparator> positionalArgumentsSet{};
+		std::set<std::shared_ptr<PositionalUsageArgument>, UsageComparator>
+		    positionalArgumentsSet{};
 
 		for (const auto& usage : parseTree.getUsages()) {
 			for (const auto& argument : usage.arguments) {
-				if (const auto posArg = std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
+				if (const auto posArg =
+				        std::dynamic_pointer_cast<PositionalUsageArgument>(argument)) {
 					positionalArgumentsSet.insert(posArg);
 				}
 			}
@@ -200,9 +212,8 @@ namespace Grammar {
 		mstch::array positionalArgumentsArray{};
 
 		for (const auto& posArg : positionalArgumentsSet) {
-			positionalArgumentsArray.push_back(mstch::map{
-					{ "clean_token", posArg->cleanToken() }
-			});
+			positionalArgumentsArray.push_back(
+			    mstch::map{ { "clean_token", posArg->cleanToken() } });
 		}
 
 		return positionalArgumentsArray;
@@ -212,7 +223,8 @@ namespace Grammar {
 		mstch::array usageRuleList{};
 
 		for (const auto& rulePair : parseTree.getRules()) {
-			mstch::map usageRule{ { "rule_name", Argument::cleanToken(rulePair.first) } };
+			mstch::map usageRule{ { "rule_name",
+				                      Argument::cleanToken(rulePair.first) } };
 
 			mstch::array ruleOptions{};
 
@@ -237,13 +249,16 @@ namespace Grammar {
 		return helpAddendum ? mstch::node{ *helpAddendum } : mstch::node{ false };
 	}
 
-	std::string Driver::explainRule(const std::string& ruleName,
-																					 const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions) {
+	std::string Driver::explainRule(
+	    const std::string& ruleName,
+	    const std::vector<std::shared_ptr<RuleAlternation>>& ruleOptions) {
 		return ruleName + " can be " +
-					 std::accumulate(std::next(ruleOptions.begin()), ruleOptions.end(), ruleOptions[0]->toStr(),
-													 [](const std::string& left, const std::shared_ptr<RuleAlternation>& right) {
-														 return left + " or " + right->toStr();
-													 });
+		       std::accumulate(std::next(ruleOptions.begin()), ruleOptions.end(),
+		                       ruleOptions[0]->toStr(),
+		                       [](const std::string& left,
+		                          const std::shared_ptr<RuleAlternation>& right) {
+			                       return left + " or " + right->toStr();
+		                       });
 	}
 
 	std::string Driver::spaceN(size_t spaceCount) {
@@ -253,12 +268,14 @@ namespace Grammar {
 
 	mstch::map Driver::alignArg(Argument& arg) const {
 		auto result = arg.render();
-		result.insert({ "parameter_align_spacing", spaceN(parseTree.maxArgLength - arg.argStrLength()) });
-		result.insert({ "explain_align_spacing", spaceN(parseTree.maxParamLength - arg.paramStrLength()) });
+		result.insert({ "parameter_align_spacing",
+		                spaceN(parseTree.maxArgLength - arg.argStrLength()) });
+		result.insert({ "explain_align_spacing",
+		                spaceN(parseTree.maxParamLength - arg.paramStrLength()) });
 		return result;
 	}
 
 	ParseTree Driver::getParseTree() const {
 		return this->parseTree;
 	}
-}
+} // namespace Grammar

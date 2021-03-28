@@ -1,5 +1,5 @@
 {
 	"args": "--help",
 	"input": "",
-	"output": "Usage:\n\n./_build/program\n./_build/program --help\n./_build/program --version\n./_build/program --license\n\nArguments:\n\n     --help       shows this help message\n     --license    shows the license of this software\n     --version    shows the version of this software\n\nThis program outputs some details about itself. It has no functionality.\n"
+	"output": "Usage:\n\n./program\n./program --help\n./program --version\n./program --license\n\nArguments:\n\n     --help    shows this help message\n     --license shows the license of this software\n     --version shows the version of this software\n\nThis program outputs some details about itself. It has no functionality.\n"
 }

@@ -1,0 +1,4 @@
+{
+	"args": "--help",
+	"output": "Usage:\n\n./program --flag1\n./program --flag2\n./program --flag3\n./program OTHER_FLAGS OTHER_FLAGS\n./program --help\n./program --version\n./program --license\n\nArguments:\n\nOTHER_FLAGS can be --flag4 or --flag5\n\n -a, --flag1                                 Intiates flag-1 mode\n -b, --flag2   <OPTION>                      Initiates flag-2 mode with OPTION argument\n -c, --flag3   <OPTION1> <OPTION2>           Initiates flag-3 mode with options 1 & 2 arguments\n -d, --flag4   <OPTION1> <OPTION2>           Initiates flag-4 mode with options 1 & 2 arguments\n     --flag5   <OPTION1> <OPTION2> <OPTION3> Initiates flag-5 mode\n     --help                                  shows this help message\n     --license                               shows the license of this software\n     --version                               shows the version of this software\n\nThis program demonstrates handling custom flags.\n"
+}

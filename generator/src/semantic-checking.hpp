@@ -18,4 +18,4 @@ namespace Grammar {
 
 	bool checkAllRulesDefined(const ParseTree& parseTree);
 	bool checkNoCircularRules(const ParseTree& parseTree);
-};
+}; // namespace Grammar

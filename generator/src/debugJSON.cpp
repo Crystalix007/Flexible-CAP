@@ -52,28 +52,29 @@ namespace DebugPrinter {
 	}
 
 	std::string JSONVisitor::operator()(const int& value) const {
-    return std::to_string(value);
-  }
+		return std::to_string(value);
+	}
 
-  std::string JSONVisitor::operator()(const double& value) const {
-    std::stringstream ss;
-    ss << value;
-    return ss.str();
-  }
+	std::string JSONVisitor::operator()(const double& value) const {
+		std::stringstream ss;
+		ss << value;
+		return ss.str();
+	}
 
-  std::string JSONVisitor::operator()(const bool& value) const {
-    return value ? "true" : "false";
-  }
+	std::string JSONVisitor::operator()(const bool& value) const {
+		return value ? "true" : "false";
+	}
 
 	std::string JSONVisitor::operator()(const std::string& str) const {
 		return "\"" + str + "\"";
 	}
 
-	std::string JSONVisitor::operator()(const std::shared_ptr<mstch::object>& ptr) const {
+	std::string
+	JSONVisitor::operator()(const std::shared_ptr<mstch::object>& ptr) const {
 		return "[object]";
 	}
 
 	std::string JSONVisitor::operator()(const mstch::lambda& ptr) const {
 		return "[func]";
 	}
-};
+}; // namespace DebugPrinter

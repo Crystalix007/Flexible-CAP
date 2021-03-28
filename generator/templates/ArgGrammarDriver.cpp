@@ -75,7 +75,7 @@ namespace @@{argspec}@@ArgGrammar {
 	}@@/any_positional_arguments@@
 
 	void Driver::setResult(Driver::Result result) {
-		this->result = result;
+		this->result = std::max(result, this->result);
 	}
 
 	const std::set<FlagArg>& Driver::getFlagArgs() const {

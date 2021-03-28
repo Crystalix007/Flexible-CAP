@@ -1,0 +1,5 @@
+{
+	"args": "--flag1 a",
+	"error": "Error: syntax error\nParsing failure!\n",
+	"return": 255
+}

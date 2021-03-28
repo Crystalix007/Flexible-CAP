@@ -20,10 +20,11 @@ namespace Grammar {
 		static std::string align(std::vector<std::vector<std::string>> grid);
 
 	private:
-		static std::string combine(const std::vector<std::vector<std::string>> &grid);
+		static std::string
+		combine(const std::vector<std::vector<std::string>>& grid);
 		static std::string fill(size_t size, std::string base, char fillCharacter);
 
 	protected:
 		const ParseTree parseTree;
 	};
-} // namespace Grammarrules
+} // namespace Grammar

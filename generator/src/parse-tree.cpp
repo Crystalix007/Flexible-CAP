@@ -139,7 +139,7 @@ namespace Grammar {
 				                          { "name", parameters[i] } };
 
 			if (i + 1 < parameters.size())
-				resultParameter.insert({ "next", i + 2 });
+				resultParameter.insert({ "next_state", i + 2 });
 
 			resultParameters.push_back(resultParameter);
 		}
@@ -153,13 +153,15 @@ namespace Grammar {
 	}
 
 	size_t ParameterArgument::paramStrLength() const {
-		size_t totalSize =
-		    std::accumulate(parameters.begin(), parameters.end(), 0,
-		                    [](size_t count, const std::string& str) {
-			                    return count + str.size();
-		                    });
+		size_t totalSize = std::accumulate(
+		    parameters.begin(), parameters.end(), 0,
+		    [](size_t count, const std::string& str) {
+			    const size_t paramSize =
+			        3 + str.size(); // Add in the size of angled brackets and space
+			    return count + paramSize;
+		    });
 
-		return totalSize + (parameters.size() - 1);
+		return totalSize;
 	}
 
 	bool
@@ -215,11 +217,13 @@ namespace Grammar {
 		return usages;
 	}
 
-	std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>> ParseTree::getRules() const {
+	std::map<std::string, std::vector<std::shared_ptr<RuleAlternation>>>
+	ParseTree::getRules() const {
 		return rules;
 	}
 
-	std::set<std::shared_ptr<Argument>, ArgumentComparator> ParseTree::getArguments() const {
+	std::set<std::shared_ptr<Argument>, ArgumentComparator>
+	ParseTree::getArguments() const {
 		return arguments;
 	}
 } // namespace Grammar

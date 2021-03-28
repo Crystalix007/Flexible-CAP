@@ -1,0 +1,26 @@
+Program:
+
+program custom-flags
+version "0.1"
+license "'custom-flags' has waived all copyright and related or neighboring rights\n\nwork.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>."
+help    "This program demonstrates handling custom flags."
+
+Usage:
+
+custom-flags --flag1
+custom-flags --flag2
+custom-flags --flag3
+custom-flags OTHER_FLAGS OTHER_FLAGS
+
+OTHER_FLAGS = --flag4 | --flag5
+
+Arguments:
+
+--flag1,   -a,                          "Intiates flag-1 mode"
+--flag2,   -b, OPTION,                  "Initiates flag-2 mode with OPTION argument"
+--flag3,   -c, OPTION1 OPTION2,         "Initiates flag-3 mode with options 1 & 2 arguments"
+--flag4,   -d, OPTION1 OPTION2,         "Initiates flag-4 mode with options 1 & 2 arguments"
+--flag5,       OPTION1 OPTION2 OPTION3, "Initiates flag-5 mode"
+--help,                                 "shows this help message"
+--license,                              "shows the license of this software"
+--version,                              "shows the version of this software"
